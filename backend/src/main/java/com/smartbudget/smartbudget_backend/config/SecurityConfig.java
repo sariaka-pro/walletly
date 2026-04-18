@@ -72,7 +72,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
 
         return provider;
-    }
+    } 
 
     @Bean
     public PasswordEncoder passwordEncoder() {
