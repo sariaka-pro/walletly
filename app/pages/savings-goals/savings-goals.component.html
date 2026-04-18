@@ -1,7 +1,45 @@
-<div class="savings-goals-container">
-  <app-sidenav></app-sidenav>
-  <div class="main-content">
-    <h1>Objectifs d'épargne</h1>
-    <!-- À implémenter -->
+<div class="savings-page">
+  <div class="page-header">
+    <h2 class="page-title">Savings Goals</h2>
+    <button class="btn-primary">
+      <span class="material-icons btn-icon">add</span>
+      New Goal
+    </button>
+  </div>
+
+  <div class="goals-grid">
+    @for (goal of goals; track goal.id) {
+      <div class="goal-card" [class.goal-card--completed]="isCompleted(goal)">
+        <div class="goal-card-top">
+          <span class="material-icons goal-icon">{{ goal.icon }}</span>
+          @if (isCompleted(goal)) {
+            <span class="goal-badge goal-badge--completed">
+              <span class="material-icons badge-icon">check_circle</span>
+              Completed
+            </span>
+          }
+        </div>
+
+        <div class="goal-name">{{ goal.name }}</div>
+
+        <div class="goal-amounts">
+          <span class="goal-saved">{{ goal.savedAmount | number:'1.0-0' }}€</span>
+          <span class="goal-target"> / {{ goal.targetAmount | number:'1.0-0' }}€</span>
+        </div>
+
+        <div class="progress-track">
+          <div
+            class="progress-bar"
+            [class.progress-bar--completed]="isCompleted(goal)"
+            [style.width.%]="getProgressPercent(goal)"
+          ></div>
+        </div>
+
+        <div class="goal-footer">
+          <span class="goal-pct">{{ getProgressPercent(goal) | number:'1.0-0' }}%</span>
+          <span class="goal-deadline">Target: {{ goal.deadline }}</span>
+        </div>
+      </div>
+    }
   </div>
 </div>

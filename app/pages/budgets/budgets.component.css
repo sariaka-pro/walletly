@@ -1,8 +1,152 @@
-.budgets-container {
+.budgets-page {
+  padding: 24px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.main-content {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--app-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--app-primary-hover);
+}
+
+.btn-icon {
+  font-size: 16px;
+}
+
+.budgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.budget-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.15s ease;
+}
+
+.budget-card:hover {
+  border-color: var(--app-border-hover);
+}
+
+.budget-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.budget-icon {
+  font-size: 22px;
+  color: var(--app-primary);
+  flex-shrink: 0;
+}
+
+.budget-info {
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.budget-category {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.budget-amounts {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+.budget-spent {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.budget-spent--over {
+  color: var(--app-danger);
+}
+
+.budget-sep {
+  color: var(--app-text-subtle);
+}
+
+.budget-allocated {
+  color: var(--app-text-muted);
+}
+
+.budget-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  flex-shrink: 0;
+}
+
+.budget-pct--danger {
+  color: var(--app-danger);
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--app-surface-3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.progress-bar--normal {
+  background: var(--app-primary);
+}
+
+.progress-bar--warning {
+  background: var(--app-warning);
+}
+
+.progress-bar--danger {
+  background: var(--app-danger);
 }
