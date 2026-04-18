@@ -1,0 +1,190 @@
+/* ========== CONTENEUR PRINCIPAL ========== */
+.login-container {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 1.5rem;   /* py-12 */
+  }
+  
+  /* Responsive: Grand écran */
+  @media (min-width: 1024px) {
+    .login-container {
+      padding: 2rem;   /* lg:px-8 */
+    }
+  }
+  
+  /* ========== HEADER (Logo + Titre) ========== */
+  .login-header {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 28rem;       /* sm:max-w-sm */
+  }
+  
+  /* Responsive: Petit écran */
+  @media (min-width: 640px) {
+    .login-header {
+      margin-left: auto;     /* sm:mx-auto */
+      margin-right: auto;    /* sm:mx-auto */
+      width: 100%;           /* sm:w-full */
+    }
+  }
+  
+  /* Titre */
+  .login-title {
+    margin-top: 2.5rem;      /* mt-10 */
+    text-align: center;
+    font-size: 1.875rem;     /* text-2xl */
+    line-height: 2.25rem;    /* text-2xl/9 */
+    font-weight: 700;        /* font-bold */
+    letter-spacing: -0.025em; /* tracking-tight */
+    color: white;            /* text-white */
+  }
+  
+  /* ========== FORMULAIRE CONTENEUR ========== */
+  .login-form-container {
+    margin-top: 2.5rem;      /* mt-10 */
+    margin-left: auto;       /* sm:mx-auto */
+    margin-right: auto;      /* sm:mx-auto */
+    width: 100%;             /* sm:w-full */
+    max-width: 28rem;        /* sm:max-w-sm */
+  }
+  
+  /* Responsive: Petit écran */
+  @media (min-width: 640px) {
+    .login-form-container {
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+  }
+  
+  /* ========== FORMULAIRE ========== */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;             /* space-y-6 */
+  }
+  
+  /* ========== GROUPES DE FORMULAIRE ========== */
+  
+  /* Labels */
+  .form-label {
+    display: block;
+    font-size: 0.875rem;     /* text-sm */
+    line-height: 1.5rem;     /* text-sm/6 */
+    font-weight: 500;        /* font-medium */
+    color: #d1d5db;          /* text-gray-100 */
+  }
+  
+  /* ========== EMAIL INPUT ========== */
+  .form-input-wrapper {
+    margin-top: 0.5rem;      /* mt-2 */
+  }
+  
+  .form-input {
+    display: block;
+    width: 100%;             /* w-full */
+    border-radius: 0.375rem; /* rounded-md */
+    background-color: rgba(255, 255, 255, 0.05); /* bg-white/5 */
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;         /* text-base */
+    color: white;            /* text-white */
+    border: 1px solid;       /* outline outline-1 */
+    border-color: rgba(255, 255, 255, 0.1); /* outline-white/10 */
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  
+  .form-input::placeholder {
+    color: #6b7280;          /* placeholder:text-gray-500 */
+  }
+  
+  .form-input:focus {
+    outline: 2px solid;      /* focus:outline focus:outline-2 */
+    outline-offset: -2px;    /* focus:-outline-offset-2 */
+    outline-color: #6366f1;  /* focus:outline-indigo-500 */
+    border-color: #6366f1;
+  }
+  
+  /* Responsive: Petit écran */
+  @media (min-width: 640px) {
+    .form-input {
+      font-size: 0.875rem;   /* sm:text-sm/6 */
+      line-height: 1.5rem;   /* sm:text-sm/6 */
+    }
+  }
+  
+  /* ========== PASSWORD SECTION ========== */
+  .password-header {
+    display: flex;
+    align-items: center;     /* items-center */
+    justify-content: space-between; /* justify-between */
+  }
+  
+  .password-label {
+    display: block;
+    font-size: 0.875rem;     /* text-sm */
+    line-height: 1.5rem;     /* text-sm/6 */
+    font-weight: 500;        /* font-medium */
+    color: #d1d5db;          /* text-gray-100 */
+  }
+  
+  .forgot-password-link {
+    font-size: 0.875rem;     /* text-sm */
+    font-weight: 600;        /* font-semibold */
+    color: #818cf8;          /* text-indigo-400 */
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .forgot-password-link:hover {
+    color: #a5b4fc;          /* hover:text-indigo-300 */
+  }
+  
+  /* ========== BOUTON SUBMIT ========== */
+  .submit-button {
+    display: flex;
+    width: 100%;             /* w-full */
+    justify-content: center; /* justify-center */
+    border-radius: 0.375rem; /* rounded-md */
+    background-color: #6366f1; /* bg-indigo-500 */
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;     /* text-sm */
+    line-height: 1.5rem;     /* text-sm/6 */
+    font-weight: 600;        /* font-semibold */
+    color: white;            /* text-white */
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #4f46e5; /* hover:bg-indigo-400 */
+  }
+  
+  .submit-button:focus-visible {
+    outline: 2px solid;      /* focus-visible:outline */
+    outline-offset: 2px;     /* focus-visible:outline-offset-2 */
+    outline-color: #6366f1;  /* focus-visible:outline-indigo-500 */
+  }
+  
+  /* ========== SIGNUP LINK ========== */
+  .signup-container {
+    margin-top: 2.5rem;      /* mt-10 */
+    text-align: center;
+    font-size: 0.875rem;     /* text-sm */
+    line-height: 1.5rem;     /* text-sm/6 */
+    color: #9ca3af;          /* text-gray-400 */
+  }
+  
+  .signup-link {
+    font-weight: 600;        /* font-semibold */
+    color: #818cf8;          /* text-indigo-400 */
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .signup-link:hover {
+    color: #a5b4fc;          /* hover:text-indigo-300 */
+  }
