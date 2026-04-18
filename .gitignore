@@ -1,0 +1,40 @@
+# ── FRONTEND ──
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/*.log
+frontend/.DS_Store
+
+# ── BACKEND ──
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.springBeans
+backend/.factorypath
+backend/*.log
+backend/.DS_Store
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── ENVIRONMENT ──
+.env
+.env.local
+.env.*.local
+
+# ── LOGS ──
+*.log
+logs/
+
+# ── DOCKER ──
+.dockerignore

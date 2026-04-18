@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # ── FRONTEND - Angular ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smartbudget-frontend
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://localhost:8080/api
+    depends_on:
+      - backend
+    networks:
+      - smartbudget-network
+    restart: unless-stopped
+
+  # ── BACKEND - Spring Boot ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartbudget-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/smartbudget?useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=smartbudget_user
+      - SPRING_DATASOURCE_PASSWORD=smartbudget_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - mysql
+    networks:
+      - smartbudget-network
+    restart: unless-stopped
+
+  # ── DATABASE - MySQL ──
+  mysql:
+    image: mysql:8.0
+    container_name: smartbudget-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=smartbudget
+      - MYSQL_USER=smartbudget_user
+      - MYSQL_PASSWORD=smartbudget_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - smartbudget-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+networks:
+  smartbudget-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
