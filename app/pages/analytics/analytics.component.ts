@@ -16,6 +16,7 @@ interface ExpenseCategory {
   styleUrl: './analytics.component.css',
 })
 export class AnalyticsComponent {
+  // Demo data for the current year
   readonly monthlySummary = [
     { month: 'Jan', income: 3200, expense: 2400 },
     { month: 'Feb', income: 3200, expense: 2100 },
