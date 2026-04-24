@@ -1,0 +1,208 @@
+<div class="app-sidenav">
+
+  <!-- TOP HEADER -->
+  <mat-toolbar class="app-header">
+    <button mat-icon-button class="header-icon-btn" (click)="drawerOpen.set(!drawerOpen())" matTooltip="Menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <div class="header-logo">
+      <mat-icon class="logo-icon">home</mat-icon>
+      <span class="logo-text">A very very long product name</span>
+      <span class="header-badge">Test</span>
+    </div>
+
+    <div class="header-nav">
+      <button mat-button class="nav-btn">Link 1</button>
+      <button mat-button class="nav-btn">Link 2</button>
+      <button mat-button class="nav-btn nav-btn--dropdown" [matMenuTriggerFor]="projectMenu">
+        <span class="nav-btn-text">{{ selectedProject }}</span>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #projectMenu="matMenu">
+        @for (project of projects; track project) {
+          <button mat-menu-item (click)="selectProject(project)">
+            <span>{{ project }}</span>
+            @if (project === selectedProject) {
+              <mat-icon class="check-icon">check</mat-icon>
+            }
+          </button>
+        }
+      </mat-menu>
+    </div>
+
+    <span class="header-spacer"></span>
+
+    <div class="header-actions">
+      <mat-divider class="header-divider" vertical></mat-divider>
+      <button mat-stroked-button class="create-btn">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
+      <button mat-icon-button class="header-icon-btn" matTooltip="Notifications">
+        <mat-icon [matBadge]="hasNotification ? ' ' : null" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+      </button>
+      <button mat-icon-button class="header-icon-btn" matTooltip="More" [matMenuTriggerFor]="moreMenu">
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      <mat-menu #moreMenu="matMenu">
+        <button mat-menu-item><mat-icon>settings</mat-icon>Settings</button>
+        <button mat-menu-item><mat-icon>help_outline</mat-icon>Help</button>
+        <button mat-menu-item><mat-icon>logout</mat-icon>Sign out</button>
+      </mat-menu>
+      <div class="header-avatar">AI</div>
+    </div>
+  </mat-toolbar>
+
+  <!-- BODY -->
+  <div class="app-body">
+
+    <!-- MOBILE DRAWER OVERLAY -->
+    @if (drawerOpen()) {
+      <div class="drawer-overlay" (click)="drawerOpen.set(false)"></div>
+      <div class="mobile-drawer">
+        <div class="drawer-header">
+          <span class="drawer-title">Menu</span>
+          <button mat-icon-button (click)="drawerOpen.set(false)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        @for (group of drawerItems | keyvalue; track group.key) {
+          <div class="drawer-group">
+            <div class="drawer-group-label">{{ group.key }}</div>
+            @for (item of group.value; track item) {
+              <button mat-button class="drawer-item" (click)="drawerOpen.set(false)">
+                <mat-icon>category</mat-icon>
+                {{ item }}
+              </button>
+            }
+          </div>
+        }
+        <mat-divider></mat-divider>
+      </div>
+    }
+
+    <!-- SIDEBAR -->
+    <nav class="sidenav" [class.sidenav--expanded]="expanded()">
+      <div class="sidenav-top">
+
+        <!-- Product header -->
+        <div class="sidenav-product">
+          <button mat-icon-button class="sidenav-icon-btn" [matTooltip]="expanded() ? '' : 'Home'">
+            <mat-icon>home</mat-icon>
+          </button>
+          @if (expanded()) {
+            <span class="sidenav-product-name">A very very long product name</span>
+            <span class="sidenav-badge sidenav-badge--accent">Alpha</span>
+          }
+        </div>
+
+        <mat-divider class="sidenav-divider"></mat-divider>
+
+        <!-- Nav items -->
+        <div class="sidenav-items">
+
+          <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'Search'">
+            <mat-icon>search</mat-icon>
+            @if (expanded()) {
+              <span class="sidenav-item-label">Search</span>
+              <span class="sidenav-badge sidenav-badge--accent">12</span>
+            }
+          </button>
+
+          <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'Groups'">
+            <mat-icon>group</mat-icon>
+            @if (expanded()) {
+              <span class="sidenav-item-label">Groups</span>
+            }
+          </button>
+
+          <!-- Settings with submenu -->
+          <div class="sidenav-item-group">
+            <button
+              mat-button
+              class="sidenav-item"
+              [matTooltip]="expanded() ? '' : 'Settings'"
+              (click)="toggleSettings()"
+            >
+              <mat-icon>settings</mat-icon>
+              @if (expanded()) {
+                <span class="sidenav-item-label">Settings</span>
+              }
+              @if (expanded()) {
+                <mat-icon class="sidenav-chevron" [class.sidenav-chevron--open]="settingsOpen()">chevron_right</mat-icon>
+              }
+            </button>
+            @if (expanded() && settingsOpen()) {
+              <div class="sidenav-submenu">
+                <button mat-button class="sidenav-item sidenav-item--sub">
+                  <span class="sidenav-item-label">Account</span>
+                </button>
+                <button mat-button class="sidenav-item sidenav-item--sub">
+                  <span class="sidenav-item-label">Notifications</span>
+                </button>
+                <button mat-button class="sidenav-item sidenav-item--sub">
+                  <span class="sidenav-item-label">Privacy</span>
+                </button>
+              </div>
+            }
+          </div>
+
+          <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'Favorites'">
+            <mat-icon>favorite</mat-icon>
+            @if (expanded()) {
+              <span class="sidenav-item-label sidenav-item-label--fade">By default ellipsis is used but you can use fade too</span>
+            }
+          </button>
+
+          <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'More'" [matMenuTriggerFor]="sidenavMore">
+            <mat-icon>more_horiz</mat-icon>
+            @if (expanded()) {
+              <span class="sidenav-item-label">More</span>
+            }
+            @if (expanded()) {
+              <mat-icon class="sidenav-chevron">chevron_right</mat-icon>
+            }
+          </button>
+          <mat-menu #sidenavMore="matMenu">
+            <button mat-menu-item><mat-icon>edit</mat-icon>Write</button>
+            <button mat-menu-item><mat-icon>pie_chart</mat-icon>Categories</button>
+          </mat-menu>
+
+        </div>
+
+        <mat-divider class="sidenav-divider"></mat-divider>
+
+        <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'Add'">
+          <mat-icon>add</mat-icon>
+          @if (expanded()) {
+            <span class="sidenav-item-label">Add</span>
+          }
+        </button>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="sidenav-footer">
+        <button mat-button class="sidenav-item" [matTooltip]="expanded() ? '' : 'Favorites'">
+          <mat-icon>star</mat-icon>
+          @if (expanded()) {
+            <span class="sidenav-item-label">Favorites</span>
+          }
+        </button>
+        <button mat-button class="sidenav-item sidenav-item--toggle" (click)="toggleExpanded()" [matTooltip]="expanded() ? '' : 'Expand'">
+          <mat-icon>{{ expanded() ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+          @if (expanded()) {
+            <span class="sidenav-item-label">Collapse</span>
+          }
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+      <router-outlet />
+    </main>
+
+  </div>
+</div>
