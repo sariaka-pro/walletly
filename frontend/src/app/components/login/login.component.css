@@ -1,0 +1,170 @@
+/* ========== CONTENEUR PRINCIPAL ========== */
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: var(--app-bg);
+}
+
+/* ========== CARTE CENTRALE ========== */
+.login-card {
+  width: 100%;
+  max-width: 26rem;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  padding: 2rem 2rem 1.75rem;
+}
+
+/* ========== HEADER (Logo + Titre) ========== */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.75rem;
+}
+
+.login-header img {
+  height: 36px;
+  width: auto;
+}
+
+.login-title {
+  margin: 0;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+}
+
+/* ========== FORMULAIRE ========== */
+.login-form-container {
+  width: 100%;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ========== GROUPES DE FORMULAIRE ========== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+}
+
+/* ========== INPUTS ========== */
+.form-input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  display: block;
+  width: 100%;
+  background: var(--app-surface-3);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-family: 'Roboto', sans-serif;
+  color: var(--app-text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input::placeholder {
+  color: var(--app-text-subtle);
+}
+
+.form-input:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 3px var(--app-primary-bg);
+}
+
+/* ========== PASSWORD SECTION ========== */
+.password-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.password-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+}
+
+.forgot-password-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--app-primary);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.forgot-password-link:hover {
+  opacity: 0.8;
+}
+
+/* ========== BOUTON SUBMIT ========== */
+.submit-button {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  background: var(--app-primary);
+  padding: 9px 16px;
+  font-size: 0.875rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 0.5rem;
+}
+
+.submit-button:hover {
+  background: var(--app-primary-hover);
+}
+
+.submit-button:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+/* ========== SIGNUP LINK ========== */
+.signup-container {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  border-top: 1px solid var(--app-border);
+  padding-top: 1.25rem;
+}
+
+.signup-link {
+  font-weight: 600;
+  color: var(--app-primary);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.signup-link:hover {
+  opacity: 0.8;
+}
