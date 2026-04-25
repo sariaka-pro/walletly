@@ -1,0 +1,39 @@
+<div class="dashboard-page">
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    @for (kpi of kpis; track kpi.label) {
+      <div class="kpi-card">
+        <div class="kpi-card-left">
+          <span class="kpi-label">{{ kpi.label }}</span>
+          <span class="kpi-value">{{ kpi.value }}</span>
+          <span class="kpi-change" [class.kpi-change--positive]="kpi.positive" [class.kpi-change--negative]="!kpi.positive">
+            {{ kpi.change }} vs last month
+          </span>
+        </div>
+        <span class="material-icons kpi-icon">{{ kpi.icon }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="section-card">
+    <div class="section-header">
+      <h3 class="section-title">Recent Transactions</h3>
+      <a class="section-link" routerLink="/transactions">View all</a>
+    </div>
+    <table class="mini-table">
+      <tbody>
+        @for (tx of recentTransactions; track tx.label) {
+          <tr>
+            <td class="tx-label">{{ tx.label }}</td>
+            <td><span class="tx-category">{{ tx.category }}</span></td>
+            <td class="tx-date">{{ tx.date }}</td>
+            <td class="tx-amount" [class.tx-amount--positive]="tx.amount > 0" [class.tx-amount--negative]="tx.amount < 0">
+              {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | number:'1.2-2' }}€
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

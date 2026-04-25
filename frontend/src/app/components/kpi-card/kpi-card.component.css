@@ -1,0 +1,41 @@
+.kpi-card {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+
+    padding: 15px 24px;
+    border-radius: 20px;
+  
+    background-color: rgba(78, 47, 49, 0.55);
+    backdrop-filter: blur(12px);
+  
+    color: rgb(223, 221, 215);
+}
+
+.kpi-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kpi-title {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.kpi-unit {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.kpi-icons img {
+    width: 64%;
+    height: 40%;
+    object-fit: contain;
+}
