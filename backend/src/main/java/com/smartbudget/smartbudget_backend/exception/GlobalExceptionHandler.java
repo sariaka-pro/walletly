@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -78,6 +79,21 @@ public class GlobalExceptionHandler {
 
                 return ResponseEntity
                                 .status(HttpStatus.FORBIDDEN)
+                                .body(error);
+        }
+
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        private ResponseEntity<Map<String, Object>> handleUnreadableMessage(
+                        HttpMessageNotReadableException ex,
+                        HttpServletRequest request) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("status", 400);
+                error.put("message", "Invalid request body");
+                error.put("timestamp", LocalDateTime.now());
+                error.put("path", request.getRequestURI());
+
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
                                 .body(error);
         }
 
