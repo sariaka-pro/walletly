@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 interface NavItem {
   label: string;
@@ -35,7 +36,11 @@ export class AppShellComponent implements OnInit {
   tabs = signal<string[]>([]);
   activeTab = signal<string>('');
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.router.events
@@ -62,5 +67,10 @@ export class AppShellComponent implements OnInit {
 
   selectTab(tab: string): void {
     this.activeTab.set(tab);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
