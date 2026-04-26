@@ -48,7 +48,7 @@
       <mat-menu #moreMenu="matMenu">
         <button mat-menu-item><mat-icon>settings</mat-icon>Settings</button>
         <button mat-menu-item><mat-icon>help_outline</mat-icon>Help</button>
-        <button mat-menu-item><mat-icon>logout</mat-icon>Sign out</button>
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Sign out</button>
       </mat-menu>
       <div class="header-avatar">AI</div>
     </div>

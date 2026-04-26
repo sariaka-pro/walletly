@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +40,8 @@ interface NavItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavComponent {
+  constructor(private authService: AuthService, private router: Router) {}
+
   expanded = signal(false);
   drawerOpen = signal(false);
   settingsOpen = signal(false);
@@ -67,6 +70,11 @@ export class SidenavComponent {
     Components: ['Button', 'Input', 'Tooltip'],
     Essentials: ['Getting started', 'Showcase', 'Typography'],
   };
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   toggleExpanded(): void {
     this.expanded.update((v) => !v);
