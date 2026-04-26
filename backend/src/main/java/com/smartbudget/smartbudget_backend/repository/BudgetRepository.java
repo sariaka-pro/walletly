@@ -17,6 +17,9 @@ import java.util.Optional;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     List<Budget> findByUser_Id(Long userId);
 
+    // Compte le nombre de budgets d'un utilisateur.
+    long countByUser_Id(Long userId);
+
     // 2. Récupérer LE budget d'un utilisateur pour UN MOIS spécifique
     Optional<Budget> findByUser_IdAndYearMonth(Long userId, YearMonth yearMonth);
 

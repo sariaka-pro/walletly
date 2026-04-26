@@ -21,6 +21,9 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByUser(User user);
+
+    // Compte le nombre de catégories créées par un utilisateur.
+    long countByUser_Id(Long userId);
 }
 
 
