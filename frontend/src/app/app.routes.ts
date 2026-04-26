@@ -5,8 +5,10 @@ import { TransactionsComponent } from './pages/transactions/transactions.compone
 import { BudgetsComponent } from './pages/budgets/budgets.component';
 import { SavingsGoalsPageComponent } from './pages/savings-goals/savings-goals.component';
 import { AnalyticsComponent } from './pages/analytics/analytics.component';
+import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './components/login/login.component';
 import { AppShellComponent } from './layout/app-shell/app-shell.component';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -69,6 +71,18 @@ export const routes: Routes = [
             { label: 'Analytics' },
           ],
           tabs: ['Charts', 'Reports', 'Trends'],
+        },
+      },
+      {
+        path: 'admin',
+        component: AdminComponent,
+        canActivate: [adminGuard],
+        data: {
+          breadcrumbs: [
+            { label: 'Home', url: '/dashboard' },
+            { label: 'Admin' },
+          ],
+          tabs: ['Users', 'Expenses', 'Stats'],
         },
       },
     ],

@@ -24,13 +24,20 @@ interface BreadcrumbItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent implements OnInit {
-  readonly navItems: NavItem[] = [
+  private readonly baseNavItems: NavItem[] = [
     { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { label: 'Transactions', path: '/transactions', icon: 'swap_horiz' },
     { label: 'Budgets', path: '/budgets', icon: 'account_balance_wallet' },
     { label: 'Savings Goals', path: '/savings-goals', icon: 'savings' },
     { label: 'Analytics', path: '/analytics', icon: 'bar_chart' },
   ];
+
+  get navItems(): NavItem[] {
+    if (this.authService.isAdmin()) {
+      return [...this.baseNavItems, { label: 'Admin', path: '/admin', icon: 'admin_panel_settings' }];
+    }
+    return this.baseNavItems;
+  }
 
   breadcrumbs = signal<BreadcrumbItem[]>([]);
   tabs = signal<string[]>([]);

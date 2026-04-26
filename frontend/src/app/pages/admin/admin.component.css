@@ -1,0 +1,23 @@
+.admin-page {
+  padding: 20px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+}
+
+.admin-page h1 {
+  margin: 0 0 8px;
+  color: var(--app-text);
+  font-size: 24px;
+}
+
+.admin-page p {
+  margin: 0 0 12px;
+  color: var(--app-text-muted);
+}
+
+.admin-page ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--app-text);
+}
