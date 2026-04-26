@@ -11,7 +11,7 @@ import { HttpClient } from "@angular/common/http";
 export class AuthService {
 
     // Url connectée au backend
-    private apiUrl = 'http://localhost:8081/api/auth'; 
+    private apiUrl = 'http://localhost:8081/auth'; 
 
     // Token qui permet stopper l'auth partout dès logout 
     private tokenSubject = new BehaviorSubject<String | null>(this.getToken()); 
@@ -24,8 +24,12 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
         .pipe(tap(response => {
             localStorage.setItem('token', response.token); 
-            localStorage.setItem('userId', response.id.toString());
-            localStorage.setItem('email', response.email); 
+            if (response.id !== undefined) {
+                localStorage.setItem('userId', response.id.toString());
+            }
+            if (response.email) {
+                localStorage.setItem('email', response.email);
+            }
             this.tokenSubject.next(response.token); 
             })
         ); 
