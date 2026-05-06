@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ExpenseService } from '../../services/expense.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
+import { CategoryService } from '../../services/category.service';
+import { BudgetService } from '../../services/budget.service';
 import { AdminExpense } from '../../models/admin.model';
-import { Expense } from '../../models/expense.model';
+import { Expense, Category } from '../../models/expense.model';
+import { Budget } from '../../models/budget.model';
 
 interface TxRow {
   id: number;
@@ -19,7 +24,7 @@ interface TxRow {
 @Component({
   selector: 'app-transactions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,14 +36,33 @@ export class TransactionsComponent implements OnInit {
   error = signal<string | null>(null);
   isAdmin = false;
 
+  // --- Modal Add Transaction ---
+  showModal = signal(false);
+  formDescription = '';
+  formAmount: number | null = null;
+  formDate: string = '';
+  formCategoryId: number | null = null;
+  formBudgetId: number | null = null;
+  formError = signal<string | null>(null);
+  formSaving = signal(false);
+  categories = signal<Category[]>([]);
+  budgets = signal<Budget[]>([]);
+
   constructor(
     private expenseService: ExpenseService,
     private adminService: AdminService,
     private authService: AuthService,
+    private categoryService: CategoryService,
+    private budgetService: BudgetService,
   ) {}
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
+    this.loadTransactions();
+  }
+
+  loadTransactions(): void {
+    this.loading.set(true);
     if (this.isAdmin) {
       this.adminService.getAllExpenses().subscribe({
         next: (expenses: AdminExpense[]) => {
@@ -81,5 +105,63 @@ export class TransactionsComponent implements OnInit {
         }
       });
     }
+  }
+
+  openModal(): void {
+    this.formDescription = '';
+    this.formAmount = null;
+    this.formDate = new Date().toISOString().split('T')[0];
+    this.formCategoryId = null;
+    this.formBudgetId = null;
+    this.formError.set(null);
+    // Charger catégories et budgets en parallèle
+    forkJoin({
+      categories: this.categoryService.getAllCategories(),
+      budgets: this.budgetService.getAllBudgets(),
+    }).subscribe({
+      next: ({ categories, budgets }) => {
+        this.categories.set(categories);
+        this.budgets.set(budgets);
+      },
+      error: () => this.formError.set('Impossible de charger les catégories / budgets.')
+    });
+    this.showModal.set(true);
+  }
+
+  closeModal(): void {
+    this.showModal.set(false);
+  }
+
+  saveTransaction(): void {
+    if (!this.formDescription.trim() || !this.formAmount || this.formAmount <= 0) {
+      this.formError.set('Description et montant sont obligatoires.');
+      return;
+    }
+    if (!this.formCategoryId) {
+      this.formError.set('Sélectionnez une catégorie.');
+      return;
+    }
+    if (!this.formBudgetId) {
+      this.formError.set('Sélectionnez un budget.');
+      return;
+    }
+    this.formSaving.set(true);
+    this.expenseService.createExpense({
+      description: this.formDescription.trim(),
+      amount: this.formAmount,
+      date: this.formDate,
+      category: { id: this.formCategoryId },
+      budget: { id: this.formBudgetId },
+    }).subscribe({
+      next: () => {
+        this.formSaving.set(false);
+        this.closeModal();
+        this.loadTransactions();
+      },
+      error: () => {
+        this.formError.set('Erreur lors de la création.');
+        this.formSaving.set(false);
+      }
+    });
   }
 }

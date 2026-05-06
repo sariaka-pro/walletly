@@ -1,7 +1,7 @@
 <div class="budgets-page">
   <div class="page-header">
     <h2 class="page-title">Budgets</h2>
-    <button class="btn-primary">
+    <button class="btn-primary" (click)="openModal()">
       <span class="material-icons btn-icon">add</span>
       New Budget
     </button>
@@ -42,6 +42,39 @@
           </div>
         </div>
       }
+    </div>
+  }
+
+  <!-- Modal New Budget -->
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">New Budget</h3>
+
+        @if (formError()) {
+          <p class="form-error">{{ formError() }}</p>
+        }
+
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" [(ngModel)]="formName" placeholder="e.g. Food" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>Spending limit (€) *</label>
+          <input type="number" [(ngModel)]="formSpendingLimit" min="1" placeholder="500" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>Period (YYYY-MM) *</label>
+          <input type="month" [(ngModel)]="formYearMonth" class="form-input" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button class="btn-save" (click)="saveBudget()" [disabled]="formSaving()">
+            {{ formSaving() ? 'Saving...' : 'Create' }}
+          </button>
+        </div>
+      </div>
     </div>
   }
 </div>
