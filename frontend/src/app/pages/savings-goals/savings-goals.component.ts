@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SavingsGoalService } from '../../services/savings-goal.service';
 
-interface SavingsGoal {
+interface GoalRow {
   id: number;
   name: string;
   targetAmount: number;
@@ -16,20 +17,43 @@ interface SavingsGoal {
   imports: [CommonModule],
   templateUrl: './savings-goals.component.html',
   styleUrl: './savings-goals.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SavingsGoalsPageComponent {
-  readonly goals: SavingsGoal[] = [
-    { id: 1, name: 'Emergency Fund', targetAmount: 10000, savedAmount: 6500, deadline: '2025-12-31', icon: 'shield' },
-    { id: 2, name: 'Vacation to Japan', targetAmount: 3000, savedAmount: 1200, deadline: '2025-08-01', icon: 'flight' },
-    { id: 3, name: 'New Laptop', targetAmount: 1500, savedAmount: 1500, deadline: '2025-03-01', icon: 'laptop' },
-    { id: 4, name: 'Home Down Payment', targetAmount: 50000, savedAmount: 12000, deadline: '2027-01-01', icon: 'home' },
-  ];
+export class SavingsGoalsPageComponent implements OnInit {
 
-  getProgressPercent(goal: SavingsGoal): number {
+  goals = signal<GoalRow[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
+
+  constructor(private savingsGoalService: SavingsGoalService) {}
+
+  ngOnInit(): void {
+    this.savingsGoalService.getAllSavingsGoals().subscribe({
+      next: (data) => {
+        this.goals.set(
+          data.map(g => ({
+            id: g.id,
+            name: g.name,
+            targetAmount: Number(g.targetAmount),
+            savedAmount: Number(g.currentAmount),
+            deadline: g.deadline ?? '-',
+            icon: 'savings', // icône générique
+          }))
+        );
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Impossible de charger les savings goals.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  getProgressPercent(goal: GoalRow): number {
     return Math.min((goal.savedAmount / goal.targetAmount) * 100, 100);
   }
 
-  isCompleted(goal: SavingsGoal): boolean {
+  isCompleted(goal: GoalRow): boolean {
     return goal.savedAmount >= goal.targetAmount;
   }
 }

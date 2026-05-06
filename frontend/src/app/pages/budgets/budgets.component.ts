@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BudgetService } from '../../services/budget.service';
 
-interface Budget {
+interface BudgetRow {
   id: number;
   category: string;
   allocated: number;
@@ -15,23 +16,43 @@ interface Budget {
   imports: [CommonModule],
   templateUrl: './budgets.component.html',
   styleUrl: './budgets.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+export class BudgetsComponent implements OnInit {
 
-export class BudgetsComponent {
-  readonly budgets: Budget[] = [
-    { id: 1, category: 'Food & Groceries', allocated: 500, spent: 342, icon: 'restaurant' },
-    { id: 2, category: 'Transport', allocated: 200, spent: 180, icon: 'directions_car' },
-    { id: 3, category: 'Entertainment', allocated: 150, spent: 95, icon: 'movie' },
-    { id: 4, category: 'Utilities', allocated: 300, spent: 260, icon: 'bolt' },
-    { id: 5, category: 'Health', allocated: 100, spent: 35, icon: 'health_and_safety' },
-    { id: 6, category: 'Shopping', allocated: 250, spent: 310, icon: 'shopping_bag' },
-  ];
+  budgets = signal<BudgetRow[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  getProgressPercent(budget: Budget): number {
+  constructor(private budgetService: BudgetService) {}
+
+  ngOnInit(): void {
+    this.budgetService.getAllBudgets().subscribe({
+      next: (data) => {
+        // On mappe les champs backend vers la shape attendue par le template
+        this.budgets.set(
+          data.map(b => ({
+            id: b.id,
+            category: b.name,
+            allocated: Number(b.spendingLimit),
+            spent: Number(b.currentSpent),
+            icon: 'account_balance_wallet', // icône générique, pas stockée en DB
+          }))
+        );
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Impossible de charger les budgets.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  getProgressPercent(budget: BudgetRow): number {
     return Math.min((budget.spent / budget.allocated) * 100, 100);
   }
 
-  getProgressClass(budget: Budget): string {
+  getProgressClass(budget: BudgetRow): string {
     const pct = (budget.spent / budget.allocated) * 100;
     if (pct >= 100) return 'progress-bar--danger';
     if (pct >= 80) return 'progress-bar--warning';

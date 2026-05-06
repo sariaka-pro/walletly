@@ -1,5 +1,20 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ExpenseService } from '../../services/expense.service';
+import { AdminService } from '../../services/admin.service';
+import { AuthService } from '../../services/auth.service';
+import { AdminExpense } from '../../models/admin.model';
+import { Expense } from '../../models/expense.model';
+
+interface TxRow {
+  id: number;
+  date: string;
+  label: string;
+  category: string;
+  amount: number;
+  userEmail?: string;
+  type: 'expense' | 'income';
+}
 
 @Component({
   selector: 'app-transactions',
@@ -7,14 +22,64 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TransactionsComponent {
-  readonly transactions = [
-    { id: 1, date: '2025-04-15', label: 'Grocery Store', category: 'Food', amount: -85.50, type: 'expense' },
-    { id: 2, date: '2025-04-14', label: 'Monthly Salary', category: 'Income', amount: 3200.00, type: 'income' },
-    { id: 3, date: '2025-04-13', label: 'Netflix', category: 'Entertainment', amount: -15.99, type: 'expense' },
-    { id: 4, date: '2025-04-12', label: 'Electric Bill', category: 'Utilities', amount: -120.00, type: 'expense' },
-    { id: 5, date: '2025-04-10', label: 'Freelance Payment', category: 'Income', amount: 500.00, type: 'income' },
-    { id: 6, date: '2025-04-09', label: 'Restaurant', category: 'Food', amount: -42.00, type: 'expense' },
-  ];
+export class TransactionsComponent implements OnInit {
+
+  transactions = signal<TxRow[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
+  isAdmin = false;
+
+  constructor(
+    private expenseService: ExpenseService,
+    private adminService: AdminService,
+    private authService: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
+    if (this.isAdmin) {
+      this.adminService.getAllExpenses().subscribe({
+        next: (expenses: AdminExpense[]) => {
+          this.transactions.set(
+            expenses.map(e => ({
+              id: e.id,
+              date: e.date,
+              label: e.description,
+              category: e.categoryName ?? '-',
+              amount: -Math.abs(e.amount),
+              userEmail: e.userEmail,
+              type: 'expense',
+            }))
+          );
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Impossible de charger les transactions.');
+          this.loading.set(false);
+        }
+      });
+    } else {
+      this.expenseService.getAllExpenses().subscribe({
+        next: (expenses: Expense[]) => {
+          this.transactions.set(
+            expenses.map(e => ({
+              id: e.id,
+              date: e.date,
+              label: e.description,
+              category: e.category?.name ?? '-',
+              amount: -Math.abs(e.amount),
+              type: 'expense',
+            }))
+          );
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Impossible de charger les transactions.');
+          this.loading.set(false);
+        }
+      });
+    }
+  }
 }
