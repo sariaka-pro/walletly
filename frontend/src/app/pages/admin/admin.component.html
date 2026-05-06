@@ -1,11 +1,104 @@
-<section class="admin-page">
-  <h1>Admin Panel</h1>
-  <p>
-    Cette page est reservee aux utilisateurs avec le role ADMIN.
-  </p>
-  <ul>
-    <li>Gestion des utilisateurs</li>
-    <li>Consultation globale des depenses</li>
-    <li>Statistiques globales</li>
-  </ul>
-</section>
+<div class="admin-page">
+
+  <h1 class="admin-title">Admin Panel</h1>
+
+  <!-- Stats globales -->
+  @if (stats()) {
+    <div class="admin-stats">
+      <div class="stat-card">
+        <span class="material-icons">group</span>
+        <span class="stat-value">{{ stats()!.totalUsers }}</span>
+        <span class="stat-label">Users</span>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons">euro</span>
+        <span class="stat-value">{{ stats()!.totalExpensesAmount | number:'1.2-2' }}€</span>
+        <span class="stat-label">Total Expenses</span>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons">category</span>
+        <span class="stat-value">{{ stats()!.totalCategories }}</span>
+        <span class="stat-label">Categories</span>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <p class="state-msg state-msg--error">{{ error() }}</p>
+  }
+
+  <!-- Liste des utilisateurs -->
+  <div class="admin-section">
+    <h2 class="admin-section-title">Users</h2>
+
+    @if (loading()) {
+      <p class="state-msg">Loading...</p>
+    } @else if (users().length === 0) {
+      <p class="state-msg">No users found.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Total Expenses</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                @if (editingUserId() === user.id) {
+                  <select [value]="editRole()" (change)="editRole.set($any($event.target).value)" class="role-select">
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                } @else {
+                  <span class="role-badge" [class.role-badge--admin]="user.role === 'ADMIN'">
+                    {{ user.role }}
+                  </span>
+                }
+              </td>
+              <td>{{ user.totalExpensesAmount | number:'1.2-2' }}€</td>
+              <td class="admin-actions">
+                @if (editingUserId() === user.id) {
+                  <button class="btn-save" (click)="saveRole(user.id)">Save</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                } @else {
+                  <button class="btn-edit" (click)="startEdit(user)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-delete" (click)="openDeleteModal(user)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+</div>
+
+<!-- Modal de confirmation de suppression -->
+@if (showDeleteModal()) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Confirm deletion</h3>
+      <p class="modal-body">
+        Delete user <strong>{{ userToDelete()?.email }}</strong>?
+        This action is irreversible.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-delete-confirm" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+}

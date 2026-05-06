@@ -1,23 +1,230 @@
 .admin-page {
-  padding: 20px;
+  padding: 24px;
+}
+
+.admin-title {
+  margin: 0 0 24px;
+  color: var(--app-text);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Stats */
+.admin-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 24px;
   background: var(--app-surface);
   border: 1px solid var(--app-border);
-  border-radius: 12px;
+  border-radius: 10px;
+  min-width: 130px;
 }
 
-.admin-page h1 {
-  margin: 0 0 8px;
-  color: var(--app-text);
+.stat-card .material-icons {
   font-size: 24px;
+  color: var(--app-primary);
 }
 
-.admin-page p {
-  margin: 0 0 12px;
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.stat-label {
+  font-size: 12px;
   color: var(--app-text-muted);
 }
 
-.admin-page ul {
-  margin: 0;
-  padding-left: 20px;
+/* Section */
+.admin-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.admin-section-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--app-text);
+}
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--app-text-muted);
+  border-bottom: 1px solid var(--app-border);
+  font-weight: 500;
+}
+
+.admin-table td {
+  padding: 10px 12px;
+  color: var(--app-text);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Role badge */
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--app-surface-3);
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+}
+
+.role-badge--admin {
+  background: #1d4ed820;
+  color: var(--app-primary);
+}
+
+/* Role select */
+.role-select {
+  padding: 4px 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+/* Actions */
+.admin-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-edit, .btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  color: var(--app-text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.btn-edit:hover {
+  color: var(--app-primary);
+  background: var(--app-surface-3);
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+  background: #ef444415;
+}
+
+.btn-edit .material-icons, .btn-delete .material-icons {
+  font-size: 18px;
+}
+
+.btn-save {
+  padding: 4px 10px;
+  background: var(--app-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-cancel {
+  padding: 4px 10px;
+  background: none;
+  color: var(--app-text-muted);
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* State messages */
+.state-msg {
+  color: var(--app-text-muted);
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+.state-msg--error {
+  color: #ef4444;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  padding: 28px;
+  min-width: 340px;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.modal-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.modal-body {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-delete-confirm {
+  padding: 8px 18px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
 }
