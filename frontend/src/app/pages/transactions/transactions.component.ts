@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { ExpenseService } from '../../services/expense.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
@@ -41,7 +41,8 @@ export class TransactionsComponent implements OnInit {
   formDescription = '';
   formAmount: number | null = null;
   formDate: string = '';
-  formCategoryId: number | null = null;
+  formCategoryId: number | null = null;   // -1 = "nouvelle catégorie"
+  formNewCategoryName = '';
   formBudgetId: number | null = null;
   formError = signal<string | null>(null);
   formSaving = signal(false);
@@ -112,6 +113,7 @@ export class TransactionsComponent implements OnInit {
     this.formAmount = null;
     this.formDate = new Date().toISOString().split('T')[0];
     this.formCategoryId = null;
+    this.formNewCategoryName = '';
     this.formBudgetId = null;
     this.formError.set(null);
     // Charger catégories et budgets en parallèle
@@ -141,27 +143,37 @@ export class TransactionsComponent implements OnInit {
       this.formError.set('Sélectionnez une catégorie.');
       return;
     }
+    if (this.formCategoryId === -1 && !this.formNewCategoryName.trim()) {
+      this.formError.set('Entrez le nom de la nouvelle catégorie.');
+      return;
+    }
     if (!this.formBudgetId) {
       this.formError.set('Sélectionnez un budget.');
       return;
     }
     this.formSaving.set(true);
-    this.expenseService.createExpense({
-      description: this.formDescription.trim(),
-      amount: this.formAmount,
-      date: this.formDate,
-      category: { id: this.formCategoryId },
-      budget: { id: this.formBudgetId },
-    }).subscribe({
-      next: () => {
-        this.formSaving.set(false);
-        this.closeModal();
-        this.loadTransactions();
-      },
-      error: () => {
-        this.formError.set('Erreur lors de la création.');
-        this.formSaving.set(false);
-      }
-    });
+
+    const doSave = (categoryId: number) =>
+      this.expenseService.createExpense({
+        description: this.formDescription.trim(),
+        amount: this.formAmount!,
+        date: this.formDate,
+        category: { id: categoryId },
+        budget: { id: this.formBudgetId! },
+      });
+
+    if (this.formCategoryId === -1) {
+      this.categoryService.createCategory(this.formNewCategoryName.trim()).pipe(
+        switchMap(newCat => doSave(newCat.id))
+      ).subscribe({
+        next: () => { this.formSaving.set(false); this.closeModal(); this.loadTransactions(); },
+        error: () => { this.formError.set('Erreur lors de la création.'); this.formSaving.set(false); }
+      });
+    } else {
+      doSave(this.formCategoryId).subscribe({
+        next: () => { this.formSaving.set(false); this.closeModal(); this.loadTransactions(); },
+        error: () => { this.formError.set('Erreur lors de la création.'); this.formSaving.set(false); }
+      });
+    }
   }
 }
