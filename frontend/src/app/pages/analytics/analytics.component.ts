@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ExpenseService } from '../../services/expense.service';
+import { Expense } from '../../models/expense.model';
 
-interface ExpenseCategory {
-  label: string;
-  amount: number;
-  percent: number;
-  color: string;
-}
+interface MonthlyStat { month: string; expense: number; }
+interface CategoryStat { label: string; amount: number; percent: number; color: string; }
+
+const PALETTE = ['#3b82f6','#8b5cf6','#f59e0b','#ec4899','#10b981','#ef4444','#06b6d4','#6b7280'];
 
 @Component({
   selector: 'app-analytics',
@@ -14,34 +14,64 @@ interface ExpenseCategory {
   imports: [CommonModule],
   templateUrl: './analytics.component.html',
   styleUrl: './analytics.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnalyticsComponent {
-  // Demo data for the current year
-  readonly monthlySummary = [
-    { month: 'Jan', income: 3200, expense: 2400 },
-    { month: 'Feb', income: 3200, expense: 2100 },
-    { month: 'Mar', income: 3700, expense: 2800 },
-    { month: 'Apr', income: 3200, expense: 2650 },
-  ];
+export class AnalyticsComponent implements OnInit {
 
-  readonly expenseCategories: ExpenseCategory[] = [
-    { label: 'Food', amount: 342, percent: 34, color: '#3b82f6' },
-    { label: 'Transport', amount: 180, percent: 18, color: '#8b5cf6' },
-    { label: 'Utilities', amount: 260, percent: 26, color: '#f59e0b' },
-    { label: 'Entertainment', amount: 95, percent: 9, color: '#ec4899' },
-    { label: 'Health', amount: 35, percent: 3, color: '#10b981' },
-    { label: 'Other', amount: 90, percent: 9, color: '#6b7280' },
-  ];
+  private expenses = signal<Expense[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  get totalIncome(): number {
-    return this.monthlySummary.reduce((s, m) => s + m.income, 0);
-  }
+  monthlySummary = computed<MonthlyStat[]>(() => {
+    const map = new Map<string, number>();
+    for (const e of this.expenses()) {
+      const key = e.date?.slice(0, 7) ?? 'unknown';
+      map.set(key, (map.get(key) ?? 0) + e.amount);
+    }
+    return [...map.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, expense]) => ({
+        month: new Date(key + '-01').toLocaleString('en', { month: 'short', year: '2-digit' }),
+        expense,
+      }));
+  });
 
-  get totalExpense(): number {
-    return this.monthlySummary.reduce((s, m) => s + m.expense, 0);
-  }
+  expenseCategories = computed<CategoryStat[]>(() => {
+    const map = new Map<string, number>();
+    for (const e of this.expenses()) {
+      const cat = e.category?.name ?? 'Other';
+      map.set(cat, (map.get(cat) ?? 0) + e.amount);
+    }
+    const total = [...map.values()].reduce((s, v) => s + v, 0);
+    return [...map.entries()]
+      .sort(([, a], [, b]) => b - a)
+      .map(([label, amount], i) => ({
+        label,
+        amount,
+        percent: total > 0 ? Math.round((amount / total) * 100) : 0,
+        color: PALETTE[i % PALETTE.length],
+      }));
+  });
 
-  get netSavings(): number {
-    return this.totalIncome - this.totalExpense;
+  totalExpense = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
+
+  thisMonthExpense = computed(() => {
+    const ym = new Date().toISOString().slice(0, 7);
+    return this.expenses()
+      .filter(e => e.date?.startsWith(ym))
+      .reduce((s, e) => s + e.amount, 0);
+  });
+
+  maxMonthlyExpense = computed(() =>
+    Math.max(...this.monthlySummary().map(m => m.expense), 1)
+  );
+
+  constructor(private expenseService: ExpenseService) {}
+
+  ngOnInit(): void {
+    this.expenseService.getAllExpenses().subscribe({
+      next: (data) => { this.expenses.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Impossible de charger les données.'); this.loading.set(false); },
+    });
   }
 }
