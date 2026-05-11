@@ -84,21 +84,21 @@
     }
   </div>
 
-</div>
-
-<!-- Modal de confirmation de suppression -->
-@if (showDeleteModal()) {
-  <div class="modal-overlay" (click)="closeDeleteModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h3 class="modal-title">Confirm deletion</h3>
-      <p class="modal-body">
-        Delete user <strong>{{ userToDelete()?.email }}</strong>?
-        This action is irreversible.
-      </p>
-      <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
-        <button class="btn-delete-confirm" (click)="confirmDelete()">Delete</button>
+  <!-- Modal de confirmation de suppression -->
+  @if (showDeleteModal()) {
+    <div class="modal-overlay" (click)="closeDeleteModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Confirm deletion</h3>
+        <p class="modal-body">
+          Delete user <strong>{{ userToDelete()?.email }}</strong>?
+          This action is irreversible.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
+          <button class="btn-delete-confirm" (click)="confirmDelete()">Delete</button>
+        </div>
       </div>
     </div>
-  </div>
-}
+  }
+
+</div>
