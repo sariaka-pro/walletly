@@ -29,8 +29,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/smartbudget?useSSL=false&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=smartbudget_user
-      - SPRING_DATASOURCE_PASSWORD=smartbudget_password
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       - mysql
@@ -43,10 +43,10 @@ services:
     image: mysql:8.0
     container_name: smartbudget-mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=smartbudget
-      - MYSQL_USER=smartbudget_user
-      - MYSQL_PASSWORD=smartbudget_password
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
