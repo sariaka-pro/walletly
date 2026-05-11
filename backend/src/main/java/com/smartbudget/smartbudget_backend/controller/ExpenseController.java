@@ -1,13 +1,9 @@
 package com.smartbudget.smartbudget_backend.controller; 
 
-import com.smartbudget.smartbudget_backend.service.ExpenseService;
-
-import jakarta.validation.Valid;
-
-import com.smartbudget.smartbudget_backend.model.Expense;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.smartbudget.smartbudget_backend.model.Expense;
+import com.smartbudget.smartbudget_backend.model.User;
+import com.smartbudget.smartbudget_backend.service.ExpenseService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -29,8 +31,8 @@ public class ExpenseController {
     }
 
     @GetMapping("")
-    public List<Expense> getAllExpenses() {
-        return expenseService.getAllExpenses();
+    public List<Expense> getAllExpenses(@AuthenticationPrincipal User currentUser) {
+        return expenseService.getAllExpensesByUser(currentUser);
     }
 
     @GetMapping("/{id}")

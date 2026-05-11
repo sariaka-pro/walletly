@@ -4,18 +4,16 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
 
-import com.smartbudget.smartbudget_backend.exception.BadRequestException;
-import com.smartbudget.smartbudget_backend.exception.ErrorMessages;
-import com.smartbudget.smartbudget_backend.exception.ForbiddenException;
-import com.smartbudget.smartbudget_backend.exception.NotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Service;
 
+import com.smartbudget.smartbudget_backend.exception.BadRequestException;
+import com.smartbudget.smartbudget_backend.exception.ErrorMessages;
+import com.smartbudget.smartbudget_backend.exception.ForbiddenException;
+import com.smartbudget.smartbudget_backend.exception.NotFoundException;
 import com.smartbudget.smartbudget_backend.model.Budget;
 import com.smartbudget.smartbudget_backend.model.Category;
 import com.smartbudget.smartbudget_backend.model.Expense;
@@ -56,6 +54,11 @@ public class ExpenseService {
     // 1️ - Récupérer toutes les dépenses
     public List<Expense> getAllExpenses() {
         User currentUser = getCurrentUser();
+        return expenseRepository.findByUser(currentUser);
+    }
+
+    // Variante explicite utilisée par le contrôleur pour garantir le scope user
+    public List<Expense> getAllExpensesByUser(User currentUser) {
         return expenseRepository.findByUser(currentUser);
     }
 
