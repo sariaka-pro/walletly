@@ -169,13 +169,13 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, var(--app-primary), #2c3548);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 600;
-  color: white;
+  color: var(--app-ink-on-dark);
   flex-shrink: 0;
   cursor: pointer;
   user-select: none;
@@ -416,8 +416,8 @@
 }
 
 .sidenav-badge--accent {
-  background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
+  background: var(--app-accent-soft);
+  color: var(--app-primary);
 }
 
 .sidenav-icon-btn {
