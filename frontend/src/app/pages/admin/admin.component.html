@@ -1,6 +1,9 @@
 <div class="admin-page">
 
-  <h1 class="admin-title">Admin Panel</h1>
+  <div class="admin-header">
+    <h1 class="admin-title">{{ 'admin.title' | translate }}</h1>
+    <button class="btn-new-user" (click)="openCreateUserModal()">{{ 'admin.newUser' | translate }}</button>
+  </div>
 
   <!-- Stats globales -->
   @if (stats()) {
@@ -8,17 +11,114 @@
       <div class="stat-card">
         <span class="material-icons">group</span>
         <span class="stat-value">{{ stats()!.totalUsers }}</span>
-        <span class="stat-label">Users</span>
+        <span class="stat-label">{{ 'admin.totalUsers' | translate }}</span>
       </div>
       <div class="stat-card">
         <span class="material-icons">euro</span>
         <span class="stat-value">{{ stats()!.totalExpensesAmount | number:'1.2-2' }}€</span>
-        <span class="stat-label">Total Expenses</span>
+        <span class="stat-label">{{ 'admin.totalExpenses' | translate }}</span>
       </div>
       <div class="stat-card">
         <span class="material-icons">category</span>
         <span class="stat-value">{{ stats()!.totalCategories }}</span>
-        <span class="stat-label">Categories</span>
+        <span class="stat-label">{{ 'admin.totalCategories' | translate }}</span>
+      </div>
+    </div>
+  }
+
+
+  <!-- Modal de creation d utilisateur -->
+  @if (showCreateUserModal()) {
+    <div class="modal-overlay" (click)="closeCreateUserModal()">
+      <div class="modal modal--wide" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'admin.modal.newUserTitle' | translate }}</h3>
+
+        <form class="create-user-form create-user-form--modal" (ngSubmit)="createUser()">
+          <label class="form-field">
+            <span>{{ 'auth.register.firstName' | translate }}</span>
+            <input type="text" [(ngModel)]="newUserFirstName" name="newUserFirstName" autocomplete="given-name" placeholder="John" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'auth.register.lastName' | translate }}</span>
+            <input type="text" [(ngModel)]="newUserLastName" name="newUserLastName" autocomplete="family-name" placeholder="Doe" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'auth.common.email' | translate }}</span>
+            <input type="email" [(ngModel)]="newUserEmail" name="newUserEmail" autocomplete="email" placeholder="user@example.com" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'auth.common.password' | translate }}</span>
+            <input type="password" [(ngModel)]="newUserPassword" name="newUserPassword" autocomplete="new-password" placeholder="********" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'admin.role' | translate }}</span>
+            <select [value]="newUserRole()" (change)="newUserRole.set($any($event.target).value)" name="newUserRole">
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </label>
+
+          @if (createUserError()) {
+            <p class="state-msg state-msg--error">{{ createUserError() }}</p>
+          }
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeCreateUserModal()">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-save">{{ 'common.create' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal d edition utilisateur -->
+  @if (showEditUserModal()) {
+    <div class="modal-overlay" (click)="closeEditUserModal()">
+      <div class="modal modal--wide" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'admin.modal.editUserTitle' | translate }}</h3>
+
+        <form class="create-user-form create-user-form--modal" (ngSubmit)="saveUserEdit()">
+          <label class="form-field">
+            <span>{{ 'auth.register.firstName' | translate }}</span>
+            <input type="text" [(ngModel)]="editUserFirstName" name="editUserFirstName" autocomplete="given-name" placeholder="John" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'auth.register.lastName' | translate }}</span>
+            <input type="text" [(ngModel)]="editUserLastName" name="editUserLastName" autocomplete="family-name" placeholder="Doe" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'auth.common.email' | translate }}</span>
+            <input type="email" [(ngModel)]="editUserEmail" name="editUserEmail" autocomplete="email" placeholder="user@example.com" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'admin.modal.newPasswordOptional' | translate }}</span>
+            <input type="password" [(ngModel)]="editUserPassword" name="editUserPassword" autocomplete="new-password" [placeholder]="'admin.modal.keepPassword' | translate" />
+          </label>
+
+          <label class="form-field">
+            <span>{{ 'admin.role' | translate }}</span>
+            <select [value]="editUserRole()" (change)="editUserRole.set($any($event.target).value)" name="editUserRole">
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </label>
+
+          @if (editUserError()) {
+            <p class="state-msg state-msg--error">{{ editUserError() }}</p>
+          }
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeEditUserModal()">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-save">{{ 'admin.save' | translate }}</button>
+          </div>
+        </form>
       </div>
     </div>
   }
@@ -29,53 +129,45 @@
 
   <!-- Liste des utilisateurs -->
   <div class="admin-section">
-    <h2 class="admin-section-title">Users</h2>
+    <h2 class="admin-section-title">{{ 'admin.users' | translate }}</h2>
 
     @if (loading()) {
-      <p class="state-msg">Loading...</p>
+      <p class="state-msg">{{ 'app.loading' | translate }}</p>
     } @else if (users().length === 0) {
-      <p class="state-msg">No users found.</p>
+      <p class="state-msg">{{ 'admin.noUsers' | translate }}</p>
     } @else {
       <table class="admin-table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Total Expenses</th>
-            <th>Actions</th>
+            <th>{{ 'auth.register.firstName' | translate }}</th>
+            <th>{{ 'auth.register.lastName' | translate }}</th>
+            <th>{{ 'auth.common.email' | translate }}</th>
+            <th>{{ 'admin.role' | translate }}</th>
+            <th>{{ 'admin.totalExpenses' | translate }}</th>
+            <th>{{ 'admin.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (user of users(); track user.id) {
             <tr>
               <td>{{ user.id }}</td>
+              <td>{{ user.firstName || '-' }}</td>
+              <td>{{ user.lastName || '-' }}</td>
               <td>{{ user.email }}</td>
               <td>
-                @if (editingUserId() === user.id) {
-                  <select [value]="editRole()" (change)="editRole.set($any($event.target).value)" class="role-select">
-                    <option value="USER">USER</option>
-                    <option value="ADMIN">ADMIN</option>
-                  </select>
-                } @else {
-                  <span class="role-badge" [class.role-badge--admin]="user.role === 'ADMIN'">
-                    {{ user.role }}
-                  </span>
-                }
+                <span class="role-badge" [class.role-badge--admin]="user.role === 'ADMIN'">
+                  {{ user.role }}
+                </span>
               </td>
               <td>{{ user.totalExpensesAmount | number:'1.2-2' }}€</td>
               <td class="admin-actions">
-                @if (editingUserId() === user.id) {
-                  <button class="btn-save" (click)="saveRole(user.id)">Save</button>
-                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
-                } @else {
-                  <button class="btn-edit" (click)="startEdit(user)">
-                    <span class="material-icons">edit</span>
-                  </button>
-                  <button class="btn-delete" (click)="openDeleteModal(user)">
-                    <span class="material-icons">delete</span>
-                  </button>
-                }
+                <button class="btn-edit" (click)="openEditUserModal(user)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" (click)="openDeleteModal(user)">
+                  <span class="material-icons">delete</span>
+                </button>
               </td>
             </tr>
           }
@@ -88,14 +180,14 @@
   @if (showDeleteModal()) {
     <div class="modal-overlay" (click)="closeDeleteModal()">
       <div class="modal" (click)="$event.stopPropagation()">
-        <h3 class="modal-title">Confirm deletion</h3>
+        <h3 class="modal-title">{{ 'admin.confirmDelete' | translate }}</h3>
         <p class="modal-body">
-          Delete user <strong>{{ userToDelete()?.email }}</strong>?
-          This action is irreversible.
+          {{ 'admin.modal.deleteQuestion' | translate }} <strong>{{ userToDelete()?.email }}</strong>?
+          {{ 'admin.modal.deleteIrreversible' | translate }}
         </p>
         <div class="modal-actions">
-          <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
-          <button class="btn-delete-confirm" (click)="confirmDelete()">Delete</button>
+          <button class="btn-cancel" (click)="closeDeleteModal()">{{ 'common.cancel' | translate }}</button>
+          <button class="btn-delete-confirm" (click)="confirmDelete()">{{ 'admin.delete' | translate }}</button>
         </div>
       </div>
     </div>

@@ -2,11 +2,30 @@
   padding: 24px;
 }
 
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .admin-title {
-  margin: 0 0 24px;
+  margin: 0;
   color: var(--app-text);
   font-size: 22px;
   font-weight: 600;
+}
+
+.btn-new-user {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--app-primary);
+  color: var(--app-ink-on-dark);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Stats */
@@ -53,11 +72,45 @@
   padding: 20px;
 }
 
+.admin-section--create-user {
+  margin-bottom: 20px;
+}
+
 .admin-section-title {
   margin: 0 0 16px;
   font-size: 16px;
   font-weight: 600;
   color: var(--app-text);
+}
+
+.create-user-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--app-text-muted);
+  font-size: 13px;
+}
+
+.form-field input,
+.form-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 14px;
+}
+
+.create-user-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* Table */
@@ -98,7 +151,7 @@
 }
 
 .role-badge--admin {
-  background: #1d4ed820;
+  background: var(--app-accent-soft);
   color: var(--app-primary);
 }
 
@@ -137,8 +190,8 @@
 }
 
 .btn-delete:hover {
-  color: #ef4444;
-  background: #ef444415;
+  color: var(--app-danger);
+  background: rgba(255, 123, 107, 0.14);
 }
 
 .btn-edit .material-icons, .btn-delete .material-icons {
@@ -148,7 +201,7 @@
 .btn-save {
   padding: 4px 10px;
   background: var(--app-primary);
-  color: #fff;
+  color: var(--app-ink-on-dark);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -174,7 +227,7 @@
 }
 
 .state-msg--error {
-  color: #ef4444;
+  color: var(--app-danger);
 }
 
 /* Modal */
@@ -198,6 +251,11 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 
+.modal--wide {
+  width: min(640px, calc(100vw - 32px));
+  max-width: 640px;
+}
+
 .modal-title {
   margin: 0 0 12px;
   font-size: 16px;
@@ -218,10 +276,15 @@
   justify-content: flex-end;
 }
 
+.create-user-form--modal {
+  grid-template-columns: 1fr;
+  margin-bottom: 18px;
+}
+
 .btn-delete-confirm {
   padding: 8px 18px;
-  background: #ef4444;
-  color: #fff;
+  background: var(--app-danger);
+  color: var(--app-ink-on-dark);
   border: none;
   border-radius: 6px;
   cursor: pointer;

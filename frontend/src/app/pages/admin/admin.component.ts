@@ -2,12 +2,18 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
-import { AdminGlobalStats, AdminUserSummary } from '../../models/admin.model';
+import {
+  AdminGlobalStats,
+  AdminUserSummary,
+  CreateAdminUserPayload,
+  UpdateAdminUserPayload,
+} from '../../models/admin.model';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,11 +29,29 @@ export class AdminComponent implements OnInit {
   showDeleteModal = signal(false);
   userToDelete = signal<AdminUserSummary | null>(null);
 
-  // --- Edit role ---
-  editingUserId = signal<number | null>(null);
-  editRole = signal<'USER' | 'ADMIN'>('USER');
+  // --- Edit user modal ---
+  showEditUserModal = signal(false);
+  userToEdit = signal<AdminUserSummary | null>(null);
+  editUserFirstName = '';
+  editUserLastName = '';
+  editUserEmail = '';
+  editUserPassword = '';
+  editUserRole = signal<'USER' | 'ADMIN'>('USER');
+  editUserError = signal<string | null>(null);
 
-  constructor(private adminService: AdminService) {}
+  // --- Create user ---
+  showCreateUserModal = signal(false);
+  newUserFirstName = '';
+  newUserLastName = '';
+  newUserEmail = '';
+  newUserPassword = '';
+  newUserRole = signal<'USER' | 'ADMIN'>('USER');
+  createUserError = signal<string | null>(null);
+
+  constructor(
+    private adminService: AdminService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -45,7 +69,7 @@ export class AdminComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Impossible de charger les utilisateurs.');
+        this.error.set(this.translate.instant('admin.errors.loadUsersFailed'));
         this.loading.set(false);
       }
     });
@@ -70,27 +94,108 @@ export class AdminComponent implements OnInit {
         this.closeDeleteModal();
         this.loadData();
       },
-      error: () => this.error.set('Erreur lors de la suppression.')
+      error: () => this.error.set(this.translate.instant('admin.errors.deleteFailed'))
     });
   }
 
-  // --- Edit role ---
-  startEdit(user: AdminUserSummary): void {
-    this.editingUserId.set(user.id);
-    this.editRole.set(user.role);
+  // --- Edit user ---
+  openEditUserModal(user: AdminUserSummary): void {
+    this.userToEdit.set(user);
+    this.editUserFirstName = user.firstName ?? '';
+    this.editUserLastName = user.lastName ?? '';
+    this.editUserEmail = user.email;
+    this.editUserPassword = '';
+    this.editUserRole.set(user.role);
+    this.editUserError.set(null);
+    this.showEditUserModal.set(true);
   }
 
-  cancelEdit(): void {
-    this.editingUserId.set(null);
+  closeEditUserModal(): void {
+    this.showEditUserModal.set(false);
+    this.userToEdit.set(null);
+    this.editUserError.set(null);
   }
 
-  saveRole(userId: number): void {
-    this.adminService.changeUserRole(userId, this.editRole()).subscribe({
-      next: () => {
-        this.editingUserId.set(null);
+  saveUserEdit(): void {
+    const user = this.userToEdit();
+    if (!user) return;
+
+    if (!this.editUserEmail.trim()) {
+      this.editUserError.set(this.translate.instant('admin.errors.emailRequired'));
+      return;
+    }
+
+    if (!this.editUserFirstName.trim() || !this.editUserLastName.trim()) {
+      this.editUserError.set(this.translate.instant('admin.errors.firstLastRequired'));
+      return;
+    }
+
+    const payload: UpdateAdminUserPayload = {
+      firstName: this.editUserFirstName.trim(),
+      lastName: this.editUserLastName.trim(),
+      email: this.editUserEmail.trim(),
+      role: this.editUserRole(),
+    };
+
+    if (this.editUserPassword.trim()) {
+      payload.password = this.editUserPassword;
+    }
+
+    this.adminService.updateUser(user.id, payload).subscribe({
+      next: (updatedUser) => {
+        this.users.update((currentUsers) =>
+          currentUsers.map((currentUser) => (currentUser.id === updatedUser.id ? updatedUser : currentUser))
+        );
+        this.closeEditUserModal();
         this.loadData();
       },
-      error: () => this.error.set('Erreur lors du changement de rôle.')
+      error: () => this.editUserError.set(this.translate.instant('admin.errors.updateFailed'))
+    });
+  }
+
+  openCreateUserModal(): void {
+    this.createUserError.set(null);
+    this.newUserFirstName = '';
+    this.newUserLastName = '';
+    this.newUserEmail = '';
+    this.newUserPassword = '';
+    this.newUserRole.set('USER');
+    this.showCreateUserModal.set(true);
+  }
+
+  closeCreateUserModal(): void {
+    this.showCreateUserModal.set(false);
+  }
+
+  createUser(): void {
+    if (!this.newUserFirstName.trim() || !this.newUserLastName.trim() || !this.newUserEmail.trim() || !this.newUserPassword.trim()) {
+      this.createUserError.set(this.translate.instant('admin.errors.createRequired'));
+      return;
+    }
+
+    this.createUserError.set(null);
+
+    const payload: CreateAdminUserPayload = {
+      firstName: this.newUserFirstName.trim(),
+      lastName: this.newUserLastName.trim(),
+      email: this.newUserEmail.trim(),
+      password: this.newUserPassword,
+      role: this.newUserRole(),
+    };
+
+    this.adminService.createUser(payload).subscribe({
+      next: () => {
+        this.newUserFirstName = '';
+        this.newUserLastName = '';
+        this.newUserEmail = '';
+        this.newUserPassword = '';
+        this.newUserRole.set('USER');
+        this.showCreateUserModal.set(false);
+        this.loadData();
+      },
+      error: () => {
+        this.createUserError.set(this.translate.instant('admin.errors.createFailed'));
+      }
     });
   }
 }

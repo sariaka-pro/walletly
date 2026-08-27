@@ -1,5 +1,7 @@
 export interface AdminUserSummary {
   id: number;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   role: 'USER' | 'ADMIN';
   totalExpensesAmount: number;
@@ -7,6 +9,8 @@ export interface AdminUserSummary {
 
 export interface AdminUserDetails {
   id: number;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   role: 'USER' | 'ADMIN';
   totalExpensesCount: number;
@@ -31,4 +35,40 @@ export interface AdminExpense {
   categoryId: number;
   categoryName: string;
   budgetId: number;
+}
+
+export interface AdminBudget {
+  id: number;
+  name: string;
+  spendingLimit: number;
+  currentSpent: number;
+  yearMonth: string;
+  userId: number;
+  userEmail: string;
+}
+
+export interface AdminSavingsGoal {
+  id: number;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  deadline: string | null;
+  userId: number;
+  userEmail: string;
+}
+
+export interface CreateAdminUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: 'USER' | 'ADMIN';
+}
+
+export interface UpdateAdminUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password?: string;
+  role: 'USER' | 'ADMIN';
 }
