@@ -1,8 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
 /* ═══════════════════════════════════════════════
-   Global CSS variables (Taiga-inspired dark theme)
-   ═══════════════════════════════════════════════ */
+  Global CSS variables (Requested light palette)
+  ═══════════════════════════════════════════════ */
 
 :root {
+  --app-font: 'Sora', sans-serif;
+
   /* Layout dimensions */
   --app-header-height: 52px;
   --app-subheader-height: 48px;
@@ -10,30 +14,35 @@
   --app-sidebar-collapsed: 52px;
 
   /* Background & surfaces */
-  --app-bg: #0f1117;
-  --app-surface: #161b22;
-  --app-surface-2: #1c2128;
-  --app-surface-3: #21262d;
-  --app-surface-4: #2d333b;
+  --app-bg: #F9FAFB;
+  --app-surface: #FFFFFF;
+  --app-surface-2: #F3F6FA;
+  --app-surface-3: #E9EEF5;
+  --app-surface-4: #DCE4EE;
 
   /* Borders */
-  --app-border: #30363d;
-  --app-border-hover: #484f58;
+  --app-border: #E5EAF0;
+  --app-border-hover: #CAD3DD;
 
   /* Text */
-  --app-text: #e6edf3;
-  --app-text-muted: #8b949e;
-  --app-text-subtle: #6e7681;
+  --app-text: #212930;
+  --app-text-muted: #516778;
+  --app-text-subtle: #7B8B99;
 
-  /* Primary accent */
-  --app-primary: #3b82f6;
-  --app-primary-hover: #2563eb;
-  --app-primary-bg: rgba(59, 130, 246, 0.12);
+  /* Primary + accents */
+  --app-primary: #155EEF;
+  --app-primary-hover: #0F4FD1;
+  --app-primary-bg: #F0F6FF;
+  --app-accent: #155EEF;
+  --app-accent-soft: #F0F6FF;
+  --app-accent-coral: #155EEF;
 
   /* Status */
-  --app-success: #3fb950;
-  --app-danger: #f85149;
-  --app-warning: #d29922;
+  --app-success: #155EEF;
+  --app-danger: #155EEF;
+  --app-warning: #155EEF;
+
+  --app-ink-on-dark: #FFFFFF;
 }
 
 /* ─── Reset / Base ─── */
@@ -46,7 +55,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--app-font);
   background: var(--app-bg);
   color: var(--app-text);
   -webkit-font-smoothing: antialiased;

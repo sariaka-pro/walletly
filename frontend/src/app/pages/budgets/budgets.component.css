@@ -23,11 +23,11 @@
   align-items: center;
   gap: 6px;
   background: var(--app-primary);
-  color: #fff;
+  color: var(--app-ink-on-dark);
   border: none;
   cursor: pointer;
   font-size: 13px;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--app-font);
   font-weight: 500;
   height: 34px;
   padding: 0 14px;
@@ -103,7 +103,7 @@
   background: var(--app-surface-3);
   color: var(--app-text);
   font-size: 13px;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--app-font);
   outline: none;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -121,10 +121,10 @@
   margin: 0;
   padding: 8px 12px;
   border-radius: 6px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(255, 123, 107, 0.1);
+  border: 1px solid rgba(255, 123, 107, 0.25);
   font-size: 12px;
-  color: #f87171;
+  color: var(--app-danger);
 }
 
 .modal-actions {
@@ -138,13 +138,13 @@
 .btn-save {
   padding: 8px 20px;
   background: var(--app-primary);
-  color: #fff;
+  color: var(--app-ink-on-dark);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--app-font);
   transition: background 0.15s, opacity 0.15s;
 }
 
@@ -165,7 +165,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--app-font);
   transition: border-color 0.15s, color 0.15s;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .state-msg--error {
-  color: #f87171;
+  color: var(--app-danger);
 }
 
 .budget-card {
@@ -222,6 +222,14 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.budget-owner {
+  font-size: 11px;
+  color: var(--app-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

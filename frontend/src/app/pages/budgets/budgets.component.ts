@@ -2,6 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BudgetService } from '../../services/budget.service';
+import { AdminService } from '../../services/admin.service';
+import { AuthService } from '../../services/auth.service';
+import { AdminBudget } from '../../models/admin.model';
+import { Budget } from '../../models/budget.model';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 interface BudgetRow {
   id: number;
@@ -9,12 +14,13 @@ interface BudgetRow {
   allocated: number;
   spent: number;
   icon: string;
+  userEmail?: string;
 }
 
 @Component({
   selector: 'app-budgets',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './budgets.component.html',
   styleUrl: './budgets.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +30,7 @@ export class BudgetsComponent implements OnInit {
   budgets = signal<BudgetRow[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  isAdmin = false;
 
   // --- Modal New Budget ---
   showModal = signal(false);
@@ -33,18 +40,47 @@ export class BudgetsComponent implements OnInit {
   formError = signal<string | null>(null);
   formSaving = signal(false);
 
-  constructor(private budgetService: BudgetService) {}
+  constructor(
+    private budgetService: BudgetService,
+    private adminService: AdminService,
+    private authService: AuthService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
     this.loadBudgets();
   }
 
   loadBudgets(): void {
     this.loading.set(true);
+    if (this.isAdmin) {
+      this.adminService.getAllBudgets().subscribe({
+        next: (budgets: AdminBudget[]) => {
+          this.budgets.set(
+            budgets.map(b => ({
+              id: b.id,
+              category: b.name,
+              allocated: Number(b.spendingLimit),
+              spent: Number(b.currentSpent),
+              icon: 'account_balance_wallet',
+              userEmail: b.userEmail,
+            }))
+          );
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set(this.translate.instant('budgets.errors.loadFailed'));
+          this.loading.set(false);
+        }
+      });
+      return;
+    }
+
     this.budgetService.getAllBudgets().subscribe({
-      next: (data) => {
+      next: (budgets: Budget[]) => {
         this.budgets.set(
-          data.map(b => ({
+          budgets.map(b => ({
             id: b.id,
             category: b.name,
             allocated: Number(b.spendingLimit),
@@ -55,7 +91,7 @@ export class BudgetsComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Impossible de charger les budgets.');
+        this.error.set(this.translate.instant('budgets.errors.loadFailed'));
         this.loading.set(false);
       }
     });
@@ -77,11 +113,11 @@ export class BudgetsComponent implements OnInit {
 
   saveBudget(): void {
     if (!this.formName.trim() || !this.formSpendingLimit || this.formSpendingLimit <= 0) {
-      this.formError.set('Nom et limite de dépense sont obligatoires.');
+      this.formError.set(this.translate.instant('budgets.errors.nameLimitRequired'));
       return;
     }
     if (!this.formYearMonth) {
-      this.formError.set('La période est obligatoire.');
+      this.formError.set(this.translate.instant('budgets.errors.periodRequired'));
       return;
     }
     this.formSaving.set(true);
@@ -96,7 +132,7 @@ export class BudgetsComponent implements OnInit {
         this.loadBudgets();
       },
       error: () => {
-        this.formError.set('Erreur lors de la création.');
+        this.formError.set(this.translate.instant('budgets.errors.createFailed'));
         this.formSaving.set(false);
       }
     });

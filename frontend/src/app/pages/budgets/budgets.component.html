@@ -1,18 +1,18 @@
 <div class="budgets-page">
   <div class="page-header">
-    <h2 class="page-title">Budgets</h2>
+    <h2 class="page-title">{{ 'budgets.title' | translate }}</h2>
     <button class="btn-primary" (click)="openModal()">
       <span class="material-icons btn-icon">add</span>
-      New Budget
+      {{ 'budgets.newBudget' | translate }}
     </button>
   </div>
 
   @if (loading()) {
-    <p class="state-msg">Loading...</p>
+    <p class="state-msg">{{ 'app.loading' | translate }}</p>
   } @else if (error()) {
     <p class="state-msg state-msg--error">{{ error() }}</p>
   } @else if (budgets().length === 0) {
-    <p class="state-msg">No budgets yet.</p>
+    <p class="state-msg">{{ 'budgets.empty' | translate }}</p>
   } @else {
     <div class="budgets-grid">
       @for (budget of budgets(); track budget.id) {
@@ -21,6 +21,9 @@
             <span class="material-icons budget-icon">{{ budget.icon }}</span>
             <div class="budget-info">
               <span class="budget-category">{{ budget.category }}</span>
+              @if (isAdmin && budget.userEmail) {
+                <span class="budget-owner">{{ budget.userEmail }}</span>
+              }
               <span class="budget-amounts">
                 <span [class]="budget.spent > budget.allocated ? 'budget-spent budget-spent--over' : 'budget-spent'">
                   {{ budget.spent | number:'1.0-0' }}€
@@ -49,29 +52,29 @@
   @if (showModal()) {
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal" (click)="$event.stopPropagation()">
-        <h3 class="modal-title">New Budget</h3>
+        <h3 class="modal-title">{{ 'budgets.modal.title' | translate }}</h3>
 
         @if (formError()) {
           <p class="form-error">{{ formError() }}</p>
         }
 
         <div class="form-group">
-          <label>Name *</label>
-          <input type="text" [(ngModel)]="formName" placeholder="e.g. Food" class="form-input" />
+          <label>{{ 'budgets.name' | translate }} *</label>
+          <input type="text" [(ngModel)]="formName" [placeholder]="'budgets.modal.placeholders.name' | translate" class="form-input" />
         </div>
         <div class="form-group">
-          <label>Spending limit (€) *</label>
+          <label>{{ 'budgets.modal.limitWithCurrency' | translate }} *</label>
           <input type="number" [(ngModel)]="formSpendingLimit" min="1" placeholder="500" class="form-input" />
         </div>
         <div class="form-group">
-          <label>Period (YYYY-MM) *</label>
+          <label>{{ 'budgets.modal.period' | translate }} *</label>
           <input type="month" [(ngModel)]="formYearMonth" class="form-input" />
         </div>
 
         <div class="modal-actions">
-          <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button class="btn-save" (click)="saveBudget()" [disabled]="formSaving()">
-            {{ formSaving() ? 'Saving...' : 'Create' }}
+            {{ formSaving() ? ('common.saving' | translate) : ('common.create' | translate) }}
           </button>
         </div>
       </div>

@@ -1,30 +1,30 @@
 <div class="transactions-page">
   <div class="page-header">
-    <h2 class="page-title">Transactions</h2>
+    <h2 class="page-title">{{ 'transactions.title' | translate }}</h2>
     @if (!isAdmin) {
       <button class="btn-primary" (click)="openModal()">
         <span class="material-icons btn-icon">add</span>
-        Add Transaction
+        {{ 'transactions.add' | translate }}
       </button>
     }
   </div>
 
   @if (loading()) {
-    <p class="state-msg">Loading...</p>
+    <p class="state-msg">{{ 'app.loading' | translate }}</p>
   } @else if (error()) {
     <p class="state-msg state-msg--error">{{ error() }}</p>
   } @else if (transactions().length === 0) {
-    <p class="state-msg">No transactions yet.</p>
+    <p class="state-msg">{{ 'transactions.empty' | translate }}</p>
   } @else {
     <div class="transactions-table-wrapper">
       <table class="transactions-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Category</th>
-            @if (isAdmin) { <th>User</th> }
-            <th class="text-right">Amount</th>
+            <th>{{ 'transactions.date' | translate }}</th>
+            <th>{{ 'transactions.description' | translate }}</th>
+            <th>{{ 'transactions.category' | translate }}</th>
+            @if (isAdmin) { <th>{{ 'transactions.user' | translate }}</th> }
+            <th class="text-right">{{ 'transactions.amount' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -37,8 +37,8 @@
               </td>
               @if (isAdmin) { <td class="tx-user">{{ tx.userEmail }}</td> }
               <td class="text-right">
-                <span [class]="tx.type === 'income' ? 'tx-amount tx-amount--income' : 'tx-amount tx-amount--expense'">
-                  {{ tx.type === 'income' ? '+' : '' }}{{ tx.amount | number:'1.2-2' }}€
+                <span class="tx-amount tx-amount--expense">
+                  {{ tx.amount | number:'1.2-2' }}€
                 </span>
               </td>
             </tr>
@@ -52,44 +52,44 @@
   @if (showModal()) {
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3 class="modal-title">Add Transaction</h3>
+      <h3 class="modal-title">{{ 'transactions.modal.title' | translate }}</h3>
 
       @if (formError()) {
         <p class="form-error">{{ formError() }}</p>
       }
 
       <div class="form-group">
-        <label>Description *</label>
-        <input type="text" [(ngModel)]="formDescription" placeholder="e.g. Grocery store" class="form-input" />
+        <label>{{ 'transactions.description' | translate }} *</label>
+        <input type="text" [(ngModel)]="formDescription" [placeholder]="'transactions.modal.placeholders.description' | translate" class="form-input" />
       </div>
       <div class="form-group">
-        <label>Amount (€) *</label>
+        <label>{{ 'transactions.modal.amountWithCurrency' | translate }} *</label>
         <input type="number" [(ngModel)]="formAmount" min="0.01" step="0.01" placeholder="0.00" class="form-input" />
       </div>
       <div class="form-group">
-        <label>Date *</label>
+        <label>{{ 'transactions.date' | translate }} *</label>
         <input type="date" [(ngModel)]="formDate" class="form-input" />
       </div>
       <div class="form-group">
-        <label>Category *</label>
+        <label>{{ 'transactions.category' | translate }} *</label>
         <select [(ngModel)]="formCategoryId" class="form-input">
-          <option [ngValue]="null" disabled>Select a category</option>
+          <option [ngValue]="null" disabled>{{ 'transactions.modal.selectCategory' | translate }}</option>
           @for (cat of categories(); track cat.id) {
             <option [ngValue]="cat.id">{{ cat.name }}</option>
           }
-          <option [ngValue]="-1">＋ New category...</option>
+          <option [ngValue]="-1">{{ 'transactions.modal.newCategory' | translate }}</option>
         </select>
       </div>
       @if (formCategoryId === -1) {
         <div class="form-group">
-          <label>New category name *</label>
-          <input type="text" [(ngModel)]="formNewCategoryName" placeholder="e.g. Transport" class="form-input" />
+          <label>{{ 'transactions.modal.newCategoryName' | translate }} *</label>
+          <input type="text" [(ngModel)]="formNewCategoryName" [placeholder]="'transactions.modal.placeholders.newCategoryName' | translate" class="form-input" />
         </div>
       }
       <div class="form-group">
-        <label>Budget *</label>
+        <label>{{ 'transactions.modal.budget' | translate }} *</label>
         <select [(ngModel)]="formBudgetId" class="form-input">
-          <option [ngValue]="null" disabled>Select a budget</option>
+          <option [ngValue]="null" disabled>{{ 'transactions.modal.selectBudget' | translate }}</option>
           @for (b of budgets(); track b.id) {
             <option [ngValue]="b.id">{{ b.name }} ({{ b.yearMonth }})</option>
           }
@@ -97,9 +97,9 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
         <button class="btn-save" (click)="saveTransaction()" [disabled]="formSaving()">
-          {{ formSaving() ? 'Saving...' : 'Add' }}
+          {{ formSaving() ? ('common.saving' | translate) : ('common.add' | translate) }}
         </button>
       </div>
     </div>

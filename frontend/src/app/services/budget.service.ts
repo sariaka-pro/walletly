@@ -37,9 +37,4 @@ export class BudgetService {
   deleteBudget(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-
-  // récupère les stats annuelles 
-  getYearlyStats(year: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/stats/yearly?year=${year}`);
-  }
 }

@@ -242,6 +242,11 @@
   color: var(--app-text);
 }
 
+.goal-owner {
+  font-size: 11px;
+  color: var(--app-text-muted);
+}
+
 .goal-amounts {
   font-size: 13px;
 }

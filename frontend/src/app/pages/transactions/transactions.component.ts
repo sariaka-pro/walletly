@@ -10,6 +10,7 @@ import { BudgetService } from '../../services/budget.service';
 import { AdminExpense } from '../../models/admin.model';
 import { Expense, Category } from '../../models/expense.model';
 import { Budget } from '../../models/budget.model';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 interface TxRow {
   id: number;
@@ -18,13 +19,12 @@ interface TxRow {
   category: string;
   amount: number;
   userEmail?: string;
-  type: 'expense' | 'income';
 }
 
 @Component({
   selector: 'app-transactions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +55,7 @@ export class TransactionsComponent implements OnInit {
     private authService: AuthService,
     private categoryService: CategoryService,
     private budgetService: BudgetService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -75,13 +76,12 @@ export class TransactionsComponent implements OnInit {
               category: e.categoryName ?? '-',
               amount: -Math.abs(e.amount),
               userEmail: e.userEmail,
-              type: 'expense',
             }))
           );
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('Impossible de charger les transactions.');
+          this.error.set(this.translate.instant('transactions.errors.loadFailed'));
           this.loading.set(false);
         }
       });
@@ -95,13 +95,12 @@ export class TransactionsComponent implements OnInit {
               label: e.description,
               category: e.category?.name ?? '-',
               amount: -Math.abs(e.amount),
-              type: 'expense',
             }))
           );
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('Impossible de charger les transactions.');
+          this.error.set(this.translate.instant('transactions.errors.loadFailed'));
           this.loading.set(false);
         }
       });
@@ -125,7 +124,7 @@ export class TransactionsComponent implements OnInit {
         this.categories.set(categories);
         this.budgets.set(budgets);
       },
-      error: () => this.formError.set('Impossible de charger les catégories / budgets.')
+      error: () => this.formError.set(this.translate.instant('transactions.errors.loadCategoriesBudgetsFailed'))
     });
     this.showModal.set(true);
   }
@@ -136,19 +135,19 @@ export class TransactionsComponent implements OnInit {
 
   saveTransaction(): void {
     if (!this.formDescription.trim() || !this.formAmount || this.formAmount <= 0) {
-      this.formError.set('Description et montant sont obligatoires.');
+      this.formError.set(this.translate.instant('transactions.errors.descriptionAmountRequired'));
       return;
     }
     if (!this.formCategoryId) {
-      this.formError.set('Sélectionnez une catégorie.');
+      this.formError.set(this.translate.instant('transactions.errors.categoryRequired'));
       return;
     }
     if (this.formCategoryId === -1 && !this.formNewCategoryName.trim()) {
-      this.formError.set('Entrez le nom de la nouvelle catégorie.');
+      this.formError.set(this.translate.instant('transactions.errors.newCategoryNameRequired'));
       return;
     }
     if (!this.formBudgetId) {
-      this.formError.set('Sélectionnez un budget.');
+      this.formError.set(this.translate.instant('transactions.errors.budgetRequired'));
       return;
     }
     this.formSaving.set(true);
@@ -167,12 +166,12 @@ export class TransactionsComponent implements OnInit {
         switchMap(newCat => doSave(newCat.id))
       ).subscribe({
         next: () => { this.formSaving.set(false); this.closeModal(); this.loadTransactions(); },
-        error: () => { this.formError.set('Erreur lors de la création.'); this.formSaving.set(false); }
+        error: () => { this.formError.set(this.translate.instant('transactions.errors.createFailed')); this.formSaving.set(false); }
       });
     } else {
       doSave(this.formCategoryId).subscribe({
         next: () => { this.formSaving.set(false); this.closeModal(); this.loadTransactions(); },
-        error: () => { this.formError.set('Erreur lors de la création.'); this.formSaving.set(false); }
+        error: () => { this.formError.set(this.translate.instant('transactions.errors.createFailed')); this.formSaving.set(false); }
       });
     }
   }

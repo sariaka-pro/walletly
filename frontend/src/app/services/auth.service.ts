@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs";
-import { AuthResponse, LoginDto, User } from "../models/user.model";
+import { AuthResponse, LoginDto, RegisterDto, User } from "../models/user.model";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
@@ -30,24 +30,31 @@ export class AuthService {
             if (response.email) {
                 localStorage.setItem('email', response.email);
             }
+            if (response.firstName && response.firstName.trim()) {
+                localStorage.setItem('firstName', response.firstName.trim());
+            } else {
+                localStorage.removeItem('firstName');
+            }
+            if (response.lastName && response.lastName.trim()) {
+                localStorage.setItem('lastName', response.lastName.trim());
+            } else {
+                localStorage.removeItem('lastName');
+            }
             this.tokenSubject.next(response.token); 
             })
         ); 
     } 
 
-    register(email: string, password: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/register`, {email, password})
-        .pipe(tap(response => {
-            localStorage.setItem('token', response.token);
-            this.tokenSubject.next(response.token);
-            })
-        ); 
+    register(payload: RegisterDto): Observable<string> {
+        return this.http.post(`${this.apiUrl}/register`, payload, { responseType: 'text' });
     }
 
     logout(): void {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('email');
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
         this.tokenSubject.next(null);
     }
 
@@ -64,26 +71,45 @@ export class AuthService {
         return userId ? parseInt(userId) : null; 
     }
 
-    getRoleFromToken(token: string): User['role'] | null {
-        try {
-            // Un JWT est composé de 3 parties séparées par des points : header.payload.signature
-            const parts = token.split('.');
+    getCurrentEmail(): string | null {
+        return localStorage.getItem('email');
+    }
 
-            // Si le token n'a pas exactement 3 parties, il est invalide
+    getCurrentFirstName(): string | null {
+        const fromStorage = localStorage.getItem('firstName');
+        if (fromStorage && fromStorage.trim()) {
+            return fromStorage.trim();
+        }
+
+        const token = this.getToken();
+        if (!token) return null;
+
+        const payload = this.getTokenPayload(token);
+        const rawFirstName = payload?.['firstName'];
+        const firstName = typeof rawFirstName === 'string' ? rawFirstName.trim() : '';
+        return firstName.length > 0 ? firstName : null;
+    }
+
+    private getTokenPayload(token: string): Record<string, any> | null {
+        try {
+            const parts = token.split('.');
             if (parts.length !== 3) return null;
 
-            // La 2ème partie (index 1) contient le payload encodé en base64url
-            // base64url utilise '-' et '_' à la place de '+' et '/' → on les remet au format base64 standard
             const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-
-            // base64 doit avoir une longueur multiple de 4, on ajoute des '=' si nécessaire
             const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+            return JSON.parse(atob(padded));
+        } catch {
+            return null;
+        }
+    }
 
-            // On décode le base64 en string JSON puis on le parse en objet JavaScript
-            const payload = JSON.parse(atob(padded));
+    getRoleFromToken(token: string): User['role'] | null {
+        try {
+            const payload = this.getTokenPayload(token);
+            if (!payload) return null;
 
             // On lit le rôle : Spring peut l'envoyer sous "role" (string) ou "roles" (tableau)
-            const raw: string = payload?.role ?? payload?.roles?.[0] ?? '';
+            const raw: string = payload?.['role'] ?? payload?.['roles']?.[0] ?? '';
 
             // Spring préfixe les rôles avec "ROLE_" (ex: "ROLE_ADMIN") → on enlève ce préfixe
             const normalized = raw.replace('ROLE_', '');
