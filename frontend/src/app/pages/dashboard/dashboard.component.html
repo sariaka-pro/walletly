@@ -1,50 +1,125 @@
 <div class="dashboard-page">
 
   @if (loading()) {
-    <p class="state-msg">Loading...</p>
+    <p class="state-msg">{{ 'app.loading' | translate }}</p>
   } @else {
 
-    <!-- KPI Cards -->
-    <div class="kpi-grid">
-      @for (kpi of kpis(); track kpi.label) {
-        <div class="kpi-card">
+    <section class="dashboard-hero">
+      <div>
+        <p class="eyebrow">{{ 'dashboard.overview' | translate }}</p>
+        <h1 class="hero-title">{{ 'dashboard.hello' | translate }} {{ displayName() }}!</h1>
+        <p class="hero-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
+      </div>
+
+      <div class="period-switcher">
+        @for (period of periodTabs; track period.value) {
+          <button
+            type="button"
+            class="period-chip"
+            [class.period-chip--active]="activePeriod() === period.value"
+            (click)="setPeriod(period.value)"
+          >
+            {{ period.labelKey | translate }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      @for (kpi of kpis(); track kpi.labelKey) {
+        <article class="summary-card" [class.summary-card--accent]="kpi.tone === 'positive'">
           <div class="kpi-card-left">
-            <span class="kpi-label">{{ kpi.label }}</span>
-            <span class="kpi-value">{{ kpi.value }}</span>
-            <span class="kpi-change" [class.kpi-change--positive]="kpi.positive" [class.kpi-change--negative]="!kpi.positive">
-              {{ kpi.change }} vs last month
-            </span>
+            <span class="kpi-label">{{ kpi.labelKey | translate }}</span>
+            <span class="kpi-value" [class.kpi-value--positive]="kpi.tone === 'positive'" [class.kpi-value--negative]="kpi.tone === 'negative'">{{ kpi.value }}</span>
           </div>
           <span class="material-icons kpi-icon">{{ kpi.icon }}</span>
-        </div>
+        </article>
       }
-    </div>
+    </section>
 
-    <!-- Recent Transactions -->
-    <div class="section-card">
-      <div class="section-header">
-        <h3 class="section-title">Recent Transactions</h3>
-        <a class="section-link" routerLink="/transactions">View all</a>
-      </div>
-      @if (recentTransactions().length === 0) {
-        <p class="state-msg">No transactions yet.</p>
-      } @else {
-        <table class="mini-table">
-          <tbody>
-            @for (tx of recentTransactions(); track tx.label) {
-              <tr>
-                <td class="tx-label">{{ tx.label }}</td>
-                <td><span class="tx-category">{{ tx.category }}</span></td>
-                <td class="tx-date">{{ tx.date }}</td>
-                <td class="tx-amount" [class.tx-amount--positive]="tx.amount > 0" [class.tx-amount--negative]="tx.amount < 0">
-                  {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | number:'1.2-2' }}€
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    <section class="action-grid">
+      @for (action of actionCards; track action.titleKey) {
+        <a class="action-card" [class.action-card--accent]="action.tone === 'success'" routerLink="/transactions">
+          <span class="material-icons action-icon">{{ action.icon }}</span>
+          <div>
+            <h3>{{ action.titleKey | translate }}</h3>
+            <p>{{ action.descriptionKey | translate }}</p>
+          </div>
+        </a>
       }
-    </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel panel--chart">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title">{{ 'dashboard.expensesByCategory' | translate }}</h3>
+            <p class="panel-subtitle">{{ heroCaptionKey() | translate }}</p>
+          </div>
+        </div>
+
+        <div class="chart-layout">
+          <div class="donut" [style.background]="chartStyle()">
+            <div class="donut-hole">
+              <span class="donut-label">{{ 'dashboard.total' | translate }}</span>
+              <strong class="donut-value">{{ heroValue() }}</strong>
+            </div>
+          </div>
+
+          <div class="category-list">
+            @if (categorySlices().length === 0) {
+              <p class="state-msg">{{ 'transactions.empty' | translate }}</p>
+            } @else {
+              @for (slice of categorySlices(); track slice.label) {
+                <div class="category-item">
+                  <span class="category-dot" [style.background]="slice.color"></span>
+                  <div class="category-meta">
+                    <span class="category-name">{{ slice.label }}</span>
+                    <span class="category-amount">{{ slice.amount | number:'1.2-2' }}€</span>
+                  </div>
+                  <span class="category-percent">{{ slice.percentage | number:'1.0-0' }}%</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel--transactions">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title">{{ 'dashboard.recentTransactions' | translate }}</h3>
+            <p class="panel-subtitle">{{ 'dashboard.recentActivity' | translate }}</p>
+          </div>
+          <a class="panel-link" routerLink="/transactions">{{ 'dashboard.viewAll' | translate }}</a>
+        </div>
+
+        @if (recentTransactions().length === 0) {
+          <p class="state-msg">{{ 'transactions.empty' | translate }}</p>
+        } @else {
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th>{{ 'transactions.description' | translate }}</th>
+                <th>{{ 'transactions.category' | translate }}</th>
+                <th>{{ 'transactions.date' | translate }}</th>
+                <th class="text-right">{{ 'transactions.amount' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of recentTransactions(); track tx.label + tx.date) {
+                <tr>
+                  <td class="tx-label">{{ tx.label }}</td>
+                  <td><span class="tx-category">{{ tx.category }}</span></td>
+                  <td class="tx-date">{{ tx.date }}</td>
+                  <td class="tx-amount tx-amount--negative text-right">-{{ tx.amount | number:'1.2-2' }}€</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </article>
+    </section>
 
   }
 
