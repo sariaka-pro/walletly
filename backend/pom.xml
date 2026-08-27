@@ -8,11 +8,11 @@
 		<version>3.5.9</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.smartbudget</groupId>
-	<artifactId>smartbudget-backend</artifactId>
+	<groupId>com.walletly</groupId>
+	<artifactId>walletly-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Smart Budget Backend</name>
-	<description>Backend API for Smart Budget App</description>
+	<name>walletly backend</name>
+	<description>Backend API for walletly</description>
 	<url/>
 	<licenses>
 		<license/>
