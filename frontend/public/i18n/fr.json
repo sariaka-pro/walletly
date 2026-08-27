@@ -1,0 +1,218 @@
+{
+  "app": {
+    "title": "Walletly",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite.",
+    "empty": "Aucune donnée disponible."
+  },
+  "common": {
+    "cancel": "Annuler",
+    "create": "Créer",
+    "add": "Ajouter",
+    "saving": "Enregistrement..."
+  },
+  "shell": {
+    "mainNav": "Navigation principale",
+    "notifications": "Notifications",
+    "account": "Compte",
+    "breadcrumb": "Fil d'Ariane"
+  },
+  "breadcrumbs": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "transactions": "Transactions",
+    "budgets": "Budgets",
+    "savingsGoals": "Objectifs d'épargne",
+    "admin": "Administration"
+  },
+  "auth": {
+    "common": {
+      "email": "Email",
+      "password": "Mot de passe",
+      "placeholders": {
+        "email": "Saisis ton email",
+        "password": "Saisis ton mot de passe"
+      }
+    },
+    "login": {
+      "title": "Connecte-toi à ton compte",
+      "subtitle": "Utilise tes identifiants pour continuer.",
+      "button": "Se connecter",
+      "registerLink": "Créer un compte",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Pas encore inscrit ?",
+      "errors": {
+        "required": "Email et mot de passe sont obligatoires.",
+        "invalidCredentials": "Connexion impossible. Vérifie tes identifiants."
+      }
+    },
+    "register": {
+      "title": "Crée ton compte",
+      "subtitle": "Renseigne les informations ci-dessous pour créer ton profil.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "button": "S'inscrire",
+      "loginLink": "Se connecter",
+      "hasAccount": "Déjà un compte ?",
+      "placeholders": {
+        "firstName": "Saisis ton prénom",
+        "lastName": "Saisis ton nom"
+      },
+      "errors": {
+        "required": "Prénom, nom, email et mot de passe sont obligatoires.",
+        "nameRequired": "Renseigne prénom et nom pour créer ton compte.",
+        "emailExists": "Cet email est déjà utilisé. Essaie avec un autre email.",
+        "registerFailed": "Inscription impossible. Vérifie les informations saisies."
+      },
+      "info": {
+        "createdAndLogin": "Compte créé. Connexion en cours...",
+        "createdLoginNow": "Compte créé. Connecte-toi maintenant avec tes identifiants."
+      }
+    }
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "transactions": "Transactions",
+    "budgets": "Budgets",
+    "savingsGoals": "Objectifs d'épargne",
+    "admin": "Administration",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "overview": "Vue d'ensemble",
+    "hello": "Bonjour",
+    "subtitle": "Une vue claire et structurée de tes finances.",
+    "expensesByCategory": "Dépenses par catégorie",
+    "total": "Total",
+    "recentTransactions": "Dernières transactions",
+    "recentActivity": "Activité récente pour la période sélectionnée",
+    "viewAll": "Voir tout",
+    "totalExpenses": "Dépenses totales",
+    "monthlySpend": "Dépenses du mois",
+    "transactionsCount": "Nombre de transactions"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "add": "Ajouter une transaction",
+    "newExpense": "Nouvelle dépense",
+    "date": "Date",
+    "description": "Description",
+    "category": "Catégorie",
+    "amount": "Montant",
+    "user": "Utilisateur",
+    "empty": "Aucune transaction pour le moment.",
+    "errors": {
+      "loadFailed": "Impossible de charger les transactions.",
+      "loadCategoriesBudgetsFailed": "Impossible de charger les catégories / budgets.",
+      "descriptionAmountRequired": "Description et montant sont obligatoires.",
+      "categoryRequired": "Sélectionne une catégorie.",
+      "newCategoryNameRequired": "Entre le nom de la nouvelle catégorie.",
+      "budgetRequired": "Sélectionne un budget.",
+      "createFailed": "Erreur lors de la création de la transaction."
+    },
+    "modal": {
+      "title": "Ajouter une transaction",
+      "amountWithCurrency": "Montant (€)",
+      "selectCategory": "Sélectionner une catégorie",
+      "newCategory": "+ Nouvelle catégorie...",
+      "newCategoryName": "Nom de la nouvelle catégorie",
+      "budget": "Budget",
+      "selectBudget": "Sélectionner un budget",
+      "placeholders": {
+        "description": "Ex: Courses",
+        "newCategoryName": "Ex: Transport"
+      }
+    }
+  },
+  "budgets": {
+    "title": "Budgets",
+    "newBudget": "Nouveau budget",
+    "name": "Nom",
+    "limit": "Plafond",
+    "spent": "Dépensé",
+    "remaining": "Restant",
+    "user": "Utilisateur",
+    "empty": "Aucun budget pour le moment.",
+    "errors": {
+      "loadFailed": "Impossible de charger les budgets.",
+      "nameLimitRequired": "Nom et limite de dépense sont obligatoires.",
+      "periodRequired": "La période est obligatoire.",
+      "createFailed": "Erreur lors de la création du budget."
+    },
+    "modal": {
+      "title": "Nouveau budget",
+      "limitWithCurrency": "Plafond (€)",
+      "period": "Période (AAAA-MM)",
+      "placeholders": {
+        "name": "Ex: Alimentation"
+      }
+    }
+  },
+  "savingsGoals": {
+    "title": "Objectifs d'épargne",
+    "newGoal": "Nouvel objectif",
+    "name": "Nom",
+    "target": "Objectif",
+    "saved": "Épargne",
+    "deadline": "Échéance",
+    "user": "Utilisateur",
+    "empty": "Aucun objectif d'épargne pour le moment.",
+    "completed": "Atteint",
+    "errors": {
+      "loadFailed": "Impossible de charger les objectifs d'épargne.",
+      "nameTargetRequired": "Nom et montant cible sont obligatoires.",
+      "createFailed": "Erreur lors de la création de l'objectif."
+    },
+    "modal": {
+      "title": "Nouvel objectif d'épargne",
+      "targetWithCurrency": "Montant cible (€)",
+      "savedWithCurrency": "Montant déjà épargné (€)",
+      "placeholders": {
+        "name": "Ex: Vacances"
+      }
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "newUser": "Nouvel utilisateur",
+    "users": "Utilisateurs",
+    "stats": "Statistiques",
+    "globalStats": "Statistiques globales",
+    "totalUsers": "Nombre d'utilisateurs",
+    "totalExpenses": "Dépenses totales",
+    "totalCategories": "Nombre de catégories",
+    "role": "Rôle",
+    "email": "Email",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirmDelete": "Confirmer la suppression ?",
+    "noUsers": "Aucun utilisateur trouvé.",
+    "modal": {
+      "newUserTitle": "Nouvel utilisateur",
+      "editUserTitle": "Modifier un utilisateur",
+      "newPasswordOptional": "Nouveau mot de passe (optionnel)",
+      "keepPassword": "Laisse vide pour conserver le mot de passe actuel",
+      "deleteQuestion": "Supprimer l'utilisateur",
+      "deleteIrreversible": "Cette action est irréversible."
+    },
+    "errors": {
+      "loadUsersFailed": "Impossible de charger les utilisateurs.",
+      "deleteFailed": "Erreur lors de la suppression.",
+      "emailRequired": "Email obligatoire.",
+      "firstLastRequired": "Prénom et nom obligatoires.",
+      "updateFailed": "Erreur lors de la modification de l'utilisateur.",
+      "createRequired": "Prénom, nom, email et mot de passe sont obligatoires.",
+      "createFailed": "Erreur lors de la création de l'utilisateur."
+    }
+  },
+  "validation": {
+    "required": "Ce champ est requis.",
+    "email": "Veuillez saisir une adresse email valide.",
+    "minLength": "Le champ doit contenir au moins 3 caractères.",
+    "password": "Le mot de passe doit contenir au moins 6 caractères."
+  }
+}

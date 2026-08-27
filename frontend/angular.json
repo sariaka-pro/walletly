@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "smartbudget": {
+    "walletly": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "smartbudget:build:production"
+              "buildTarget": "walletly:build:production"
             },
             "development": {
-              "buildTarget": "smartbudget:build:development"
+              "buildTarget": "walletly:build:development"
             }
           },
           "defaultConfiguration": "development"
