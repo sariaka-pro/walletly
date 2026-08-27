@@ -1,4 +1,4 @@
-# SmartBudgetPro 💰
+# walletly 💰
 
 Application de gestion budgétaire complète avec **Angular** (frontend) et **Spring Boot** (backend).
 
@@ -8,7 +8,7 @@ Application de gestion budgétaire complète avec **Angular** (frontend) et **Sp
 
 **Monorepo** avec structure :
 ```
-smartBudgetPro/
+walletly/
 ├── frontend/        # Angular 18+ (port 4200)
 ├── backend/         # Spring Boot (port 8080)
 ├── docker-compose.yml
@@ -60,6 +60,8 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
+Le backend charge automatiquement les variables de [.env](.env) (racine du monorepo) via Spring `spring.config.import`.
+
 Accès: http://localhost:8080
 
 ---
@@ -104,9 +106,9 @@ ANGULAR_API_URL=http://localhost:8080/api
 
 # Backend
 SPRING_PROFILES_ACTIVE=dev
-SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/smartbudget
-SPRING_DATASOURCE_USERNAME=smartbudget_user
-SPRING_DATASOURCE_PASSWORD=smartbudget_password
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/walletly
+SPRING_DATASOURCE_USERNAME=walletly_user
+SPRING_DATASOURCE_PASSWORD=walletly_password
 ```
 
 ---
@@ -126,7 +128,7 @@ SPRING_DATASOURCE_PASSWORD=smartbudget_password
 # Initialiser le repo
 git init
 git add .
-git commit -m "Initial commit: SmartBudgetPro monorepo"
+git commit -m "Initial commit: walletly monorepo"
 ```
 
 ### **Branches recommandées**
@@ -229,9 +231,9 @@ MIT License - voir [LICENSE](LICENSE)
 ## 📞 **Support**
 
 Pour les questions ou problèmes :
-- 📧 Email: support@smartbudgetpro.com
-- 🐛 GitHub Issues: [Issues](https://github.com/smartbudgetpro/issues)
+- 📧 Email: support@walletlypro.com
+- 🐛 GitHub Issues: [Issues](https://github.com/walletlypro/issues)
 
 ---
 
-**Fait avec ❤️ par SmartBudgetPro Team**
+**Fait avec ❤️ par walletly Team**
