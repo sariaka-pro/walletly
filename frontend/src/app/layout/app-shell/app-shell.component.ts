@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   path: string;
   icon: string;
 }
@@ -18,30 +19,27 @@ interface BreadcrumbItem {
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent implements OnInit {
   private readonly baseNavItems: NavItem[] = [
-    { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-    { label: 'Transactions', path: '/transactions', icon: 'swap_horiz' },
-    { label: 'Budgets', path: '/budgets', icon: 'account_balance_wallet' },
-    { label: 'Savings Goals', path: '/savings-goals', icon: 'savings' },
-    { label: 'Analytics', path: '/analytics', icon: 'bar_chart' },
+    { labelKey: 'nav.dashboard', path: '/dashboard', icon: 'dashboard' },
+    { labelKey: 'nav.transactions', path: '/transactions', icon: 'swap_horiz' },
+    { labelKey: 'nav.budgets', path: '/budgets', icon: 'account_balance_wallet' },
+    { labelKey: 'nav.savingsGoals', path: '/savings-goals', icon: 'savings' },
   ];
 
   get navItems(): NavItem[] {
     if (this.authService.isAdmin()) {
-      return [...this.baseNavItems, { label: 'Admin', path: '/admin', icon: 'admin_panel_settings' }];
+      return [...this.baseNavItems, { labelKey: 'nav.admin', path: '/admin', icon: 'admin_panel_settings' }];
     }
     return this.baseNavItems;
   }
 
   breadcrumbs = signal<BreadcrumbItem[]>([]);
-  tabs = signal<string[]>([]);
-  activeTab = signal<string>('');
 
   constructor(
     private router: Router,
@@ -64,16 +62,7 @@ export class AppShellComponent implements OnInit {
       )
       .subscribe((data) => {
         this.breadcrumbs.set((data['breadcrumbs'] as BreadcrumbItem[]) ?? []);
-        const tabList = (data['tabs'] as string[]) ?? [];
-        this.tabs.set(tabList);
-        if (tabList.length > 0 && !tabList.includes(this.activeTab())) {
-          this.activeTab.set(tabList[0]);
-        }
       });
-  }
-
-  selectTab(tab: string): void {
-    this.activeTab.set(tab);
   }
 
   logout(): void {
