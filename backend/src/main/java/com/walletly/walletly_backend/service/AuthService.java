@@ -20,16 +20,20 @@ public class AuthService {
     private final UserRepository userRepository; 
     private final PasswordEncoder passwordEncoder; 
     private final JwtService jwtService;
+    private final InputSanitizer inputSanitizer;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, InputSanitizer inputSanitizer) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.inputSanitizer = inputSanitizer;
     }
 
     public void register(RegisterRequest request) {
 
-        if(userRepository.existsByEmail(request.getEmail())) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+
+        if(userRepository.existsByEmail(normalizedEmail)) {
             throw new BadRequestException(ErrorMessages.USER_EMAIL_ALREADY_EXISTS);
         }        
 
@@ -37,7 +41,7 @@ public class AuthService {
 
         String firstName = request.getFirstName();
         if (firstName != null) {
-            firstName = firstName.trim();
+            firstName = inputSanitizer.sanitizePlainText(firstName, "user.firstName");
             if (firstName.isEmpty()) {
                 firstName = null;
             }
@@ -45,14 +49,14 @@ public class AuthService {
 
         String lastName = request.getLastName();
         if (lastName != null) {
-            lastName = lastName.trim();
+            lastName = inputSanitizer.sanitizePlainText(lastName, "user.lastName");
             if (lastName.isEmpty()) {
                 lastName = null;
             }
         }
 
         User user = User.builder()
-            .email(request.getEmail())
+            .email(normalizedEmail)
             .firstName(firstName)
             .lastName(lastName)
             .password(hashedPassword)

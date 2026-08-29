@@ -21,11 +21,15 @@ public class SavingsGoalService {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private InputSanitizer inputSanitizer;
+
     /**
      * Créer un nouveau savings goal pour un utilisateur
      */
     public SavingsGoal createSavingsGoal(SavingsGoal savingsGoal, Long userId) {
         User user = authService.getUserById(userId);
+        savingsGoal.setName(inputSanitizer.sanitizePlainText(savingsGoal.getName(), "savingsGoal.name"));
         savingsGoal.setUser(user);
         return savingsGoalRepository.save(savingsGoal);
     }
@@ -56,7 +60,7 @@ public class SavingsGoalService {
             throw new ForbiddenException(ErrorMessages.ACCESS_DENIED);
         }
 
-        existing.setName(updated.getName());
+        existing.setName(inputSanitizer.sanitizePlainText(updated.getName(), "savingsGoal.name"));
         existing.setTargetAmount(updated.getTargetAmount());
         existing.setCurrentAmount(updated.getCurrentAmount());
         existing.setDeadline(updated.getDeadline());

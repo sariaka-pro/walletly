@@ -48,6 +48,7 @@ public class ErrorMessages {
     
     // GENERIC ERROR 
     public static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    public static final String XSS_CONTENT_NOT_ALLOWED = "HTML/JavaScript content is not allowed in field: ";
 
     // SAVINGS GOAL
     public static final String SAVINGS_GOAL_NOT_FOUND = "Savings goal not found";

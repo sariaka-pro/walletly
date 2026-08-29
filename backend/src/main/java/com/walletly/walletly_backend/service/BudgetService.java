@@ -30,12 +30,17 @@ public class BudgetService {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private InputSanitizer inputSanitizer;
+
     // ============ CRUD DE BASE ============
 
     /**
      * Créer un nouveau budget
      */
     public Budget createBudget(Budget budget, Long userId) {
+        budget.setName(inputSanitizer.sanitizePlainText(budget.getName(), "budget.name"));
+
         // 1. Vérifier que le budget n'existe pas déjà pour ce mois
         if (budgetRepository.existsByUser_IdAndYearMonth(userId, budget.getYearMonth())) {
             throw new BadRequestException(ErrorMessages.BUDGET_ALREADY_EXISTS + budget.getYearMonth());
@@ -106,7 +111,7 @@ public class BudgetService {
         }
 
         // Update seulement les champs autorisés (pas currentSpent !)
-        budget.setName(budgetUpdated.getName());
+        budget.setName(inputSanitizer.sanitizePlainText(budgetUpdated.getName(), "budget.name"));
         budget.setSpendingLimit(budgetUpdated.getSpendingLimit());
 
         return budgetRepository.save(budget);

@@ -40,6 +40,7 @@ public class AdminService {
     private final BudgetRepository budgetRepository;
     private final SavingsGoalRepository savingsGoalRepository;
     private final PasswordEncoder passwordEncoder;
+    private final InputSanitizer inputSanitizer;
 
     public AdminService(
         UserRepository userRepository,
@@ -47,7 +48,8 @@ public class AdminService {
         CategoryRepository categoryRepository,
         BudgetRepository budgetRepository,
         SavingsGoalRepository savingsGoalRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        InputSanitizer inputSanitizer
     ) {
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
@@ -55,6 +57,7 @@ public class AdminService {
         this.budgetRepository = budgetRepository;
         this.savingsGoalRepository = savingsGoalRepository;
         this.passwordEncoder = passwordEncoder;
+        this.inputSanitizer = inputSanitizer;
     }
 
     // Retourne les statistiques globales visibles sur le dashboard ADMIN.
@@ -89,8 +92,8 @@ public class AdminService {
         }
 
         User user = User.builder()
-            .firstName(request.getFirstName().trim())
-            .lastName(request.getLastName().trim())
+            .firstName(inputSanitizer.sanitizePlainText(request.getFirstName(), "user.firstName"))
+            .lastName(inputSanitizer.sanitizePlainText(request.getLastName(), "user.lastName"))
             .email(normalizedEmail)
             .password(passwordEncoder.encode(request.getPassword()))
             .role(request.getRole())
@@ -125,8 +128,8 @@ public class AdminService {
             throw new BadRequestException(ErrorMessages.USER_EMAIL_ALREADY_EXISTS);
         }
 
-        user.setFirstName(request.getFirstName().trim());
-        user.setLastName(request.getLastName().trim());
+        user.setFirstName(inputSanitizer.sanitizePlainText(request.getFirstName(), "user.firstName"));
+        user.setLastName(inputSanitizer.sanitizePlainText(request.getLastName(), "user.lastName"));
         user.setEmail(normalizedEmail);
         user.setRole(request.getRole());
 

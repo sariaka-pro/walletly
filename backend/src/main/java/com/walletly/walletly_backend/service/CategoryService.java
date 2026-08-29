@@ -2,32 +2,31 @@
 package com.walletly.walletly_backend.service;
 
 // On importe le Repository pour pouvoir l'utiliser
-import com.walletly.walletly_backend.repository.CategoryRepository;
+import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-// On importe l'annotation @Service pour dire à Spring que cette classe est un service
 import org.springframework.stereotype.Service;
 
 import com.walletly.walletly_backend.exception.ErrorMessages;
 import com.walletly.walletly_backend.exception.ForbiddenException;
 import com.walletly.walletly_backend.exception.NotFoundException;
-// On importe l'entité Category car on va l'utiliser dans nos méthodes
 import com.walletly.walletly_backend.model.Category;
 import com.walletly.walletly_backend.model.User;
-
-import java.util.List;
+import com.walletly.walletly_backend.repository.CategoryRepository;
 
 @Service // On dit à Spring : “Cette classe est un service, gère-la automatiquement.”
 public class CategoryService {
 
     // 1 - On déclare une variable qui va contenir le repository.
     private final CategoryRepository categoryRepository;
+    private final InputSanitizer inputSanitizer;
 
     // 2- On demande à Spring d'injecter automatiquement le repository
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, InputSanitizer inputSanitizer) {
         this.categoryRepository = categoryRepository; // donc ici, on dit que la variable categoryRepository = au
                                                       // paramètre du constructeur categoryRepository
+        this.inputSanitizer = inputSanitizer;
     }
 
     private User getCurrentUser() {
@@ -50,6 +49,8 @@ public class CategoryService {
     // 4- Méthode pour créer une nouvelle catégorie ou update si la catégorie existe
     // déjà (recherche par getById()).
     public Category createCategory(Category customCategory) {
+        customCategory.setName(inputSanitizer.sanitizePlainText(customCategory.getName(), "category.name"));
+        customCategory.setColor(inputSanitizer.sanitizePlainText(customCategory.getColor(), "category.color"));
         customCategory.setUser(getCurrentUser());
         return categoryRepository.save(customCategory);
     }

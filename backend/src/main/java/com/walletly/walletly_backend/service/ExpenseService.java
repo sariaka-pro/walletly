@@ -37,6 +37,9 @@ public class ExpenseService {
     @Lazy // PBBB =  se crée uniquement quand le service est utilisé 
     private BudgetService budgetService; 
 
+    @Autowired
+    private InputSanitizer inputSanitizer;
+
     /// Injection des repositories via le constructeur
     /// Spring injecte automatiquement les dépendances
     public ExpenseService(ExpenseRepository expenseRepository,
@@ -97,6 +100,7 @@ public class ExpenseService {
     }
 
     /// On associe les vraies entités
+    newExpenseData.setDescription(inputSanitizer.sanitizePlainText(newExpenseData.getDescription(), "expense.description"));
     newExpenseData.setCategory(category);
     newExpenseData.setUser(currentUser);
     newExpenseData.setBudget(budget);
@@ -165,7 +169,7 @@ public class ExpenseService {
         /// Mise à jour des champs
         existingExpense.setAmount(newExpenseData.getAmount());
         existingExpense.setDate(newExpenseData.getDate());
-        existingExpense.setDescription(newExpenseData.getDescription());
+        existingExpense.setDescription(inputSanitizer.sanitizePlainText(newExpenseData.getDescription(), "expense.description"));
         existingExpense.setCategory(category);
 
         // Récupérer l'ancien mois et la nouvelle date
