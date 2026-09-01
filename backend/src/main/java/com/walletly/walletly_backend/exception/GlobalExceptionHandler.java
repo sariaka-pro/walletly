@@ -82,6 +82,21 @@ public class GlobalExceptionHandler {
                                 .body(error);
         }
 
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<Map<String, Object>> handleUnauthorizedException(
+                        UnauthorizedException ex,
+                        HttpServletRequest request) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("status", 401);
+                error.put("message", ex.getMessage());
+                error.put("timestamp", LocalDateTime.now());
+                error.put("path", request.getRequestURI());
+
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(error);
+        }
+
         @ExceptionHandler(HttpMessageNotReadableException.class)
         private ResponseEntity<Map<String, Object>> handleUnreadableMessage(
                         HttpMessageNotReadableException ex,

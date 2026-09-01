@@ -1,5 +1,8 @@
 package com.walletly.walletly_backend.service;
 
+import java.util.Locale;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +12,7 @@ import com.walletly.walletly_backend.dto.auth.RegisterRequest;
 import com.walletly.walletly_backend.exception.BadRequestException;
 import com.walletly.walletly_backend.exception.ErrorMessages;
 import com.walletly.walletly_backend.exception.NotFoundException;
+import com.walletly.walletly_backend.exception.UnauthorizedException;
 import com.walletly.walletly_backend.model.User;
 import com.walletly.walletly_backend.model.enums.Role;
 import com.walletly.walletly_backend.repository.UserRepository;
@@ -21,17 +25,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder; 
     private final JwtService jwtService;
     private final InputSanitizer inputSanitizer;
+    private final String dummyPasswordHash;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, InputSanitizer inputSanitizer) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.inputSanitizer = inputSanitizer;
+        this.dummyPasswordHash = passwordEncoder.encode("walletly-dummy-password");
     }
 
     public void register(RegisterRequest request) {
 
-        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        String normalizedEmail = request.getEmail().trim().toLowerCase(Locale.ROOT);
 
         if(userRepository.existsByEmail(normalizedEmail)) {
             throw new BadRequestException(ErrorMessages.USER_EMAIL_ALREADY_EXISTS);
@@ -68,11 +74,19 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest logRequest) {
 
-        User user = userRepository.findByEmail(logRequest.getEmail())
-                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND));
+        String normalizedEmail = logRequest.getEmail().trim().toLowerCase(Locale.ROOT);
+        Optional<User> existingUser = userRepository.findByEmail(normalizedEmail);
 
-        if(user == null || !passwordEncoder.matches(logRequest.getPassword(), user.getPassword())) {
-            throw new BadRequestException(ErrorMessages.INVALID_CREDENTIALS);
+        if (existingUser.isEmpty()) {
+            // Effectuer quand même une vérification BCrypt afin de limiter les différences
+            // de temps de réponse entre un compte inconnu et un mauvais mot de passe.
+            passwordEncoder.matches(logRequest.getPassword(), dummyPasswordHash);
+            throw new UnauthorizedException(ErrorMessages.INVALID_CREDENTIALS);
+        }
+
+        User user = existingUser.get();
+        if (!passwordEncoder.matches(logRequest.getPassword(), user.getPassword())) {
+            throw new UnauthorizedException(ErrorMessages.INVALID_CREDENTIALS);
         }
 
         String token = jwtService.generateToken(user);
