@@ -13,6 +13,7 @@ interface BudgetRow {
   category: string;
   allocated: number;
   spent: number;
+  yearMonth: string;
   icon: string;
   userEmail?: string;
 }
@@ -40,6 +41,20 @@ export class BudgetsComponent implements OnInit {
   formError = signal<string | null>(null);
   formSaving = signal(false);
 
+  // --- Modal Edit Budget ---
+  showEditModal = signal(false);
+  budgetToEdit = signal<BudgetRow | null>(null);
+  editName = '';
+  editSpendingLimit: number | null = null;
+  editError = signal<string | null>(null);
+  editSaving = signal(false);
+
+  // --- Modal Delete Budget ---
+  showDeleteModal = signal(false);
+  budgetToDelete = signal<BudgetRow | null>(null);
+  deleteError = signal<string | null>(null);
+  deleteSaving = signal(false);
+
   constructor(
     private budgetService: BudgetService,
     private adminService: AdminService,
@@ -63,6 +78,7 @@ export class BudgetsComponent implements OnInit {
               category: b.name,
               allocated: Number(b.spendingLimit),
               spent: Number(b.currentSpent),
+              yearMonth: b.yearMonth,
               icon: 'account_balance_wallet',
               userEmail: b.userEmail,
             }))
@@ -85,6 +101,7 @@ export class BudgetsComponent implements OnInit {
             category: b.name,
             allocated: Number(b.spendingLimit),
             spent: Number(b.currentSpent),
+            yearMonth: b.yearMonth,
             icon: 'account_balance_wallet',
           }))
         );
@@ -134,6 +151,82 @@ export class BudgetsComponent implements OnInit {
       error: () => {
         this.formError.set(this.translate.instant('budgets.errors.createFailed'));
         this.formSaving.set(false);
+      }
+    });
+  }
+
+  openEditModal(budget: BudgetRow): void {
+    this.budgetToEdit.set(budget);
+    this.editName = budget.category;
+    this.editSpendingLimit = budget.allocated;
+    this.editError.set(null);
+    this.showEditModal.set(true);
+  }
+
+  closeEditModal(): void {
+    if (this.editSaving()) return;
+    this.showEditModal.set(false);
+    this.budgetToEdit.set(null);
+    this.editError.set(null);
+  }
+
+  saveBudgetEdit(): void {
+    const budget = this.budgetToEdit();
+    if (!budget || this.editSaving()) return;
+    if (!this.editName.trim() || !this.editSpendingLimit || this.editSpendingLimit <= 0) {
+      this.editError.set(this.translate.instant('budgets.errors.nameLimitRequired'));
+      return;
+    }
+
+    this.editSaving.set(true);
+    this.editError.set(null);
+    this.budgetService.updateBudget(budget.id, {
+      name: this.editName.trim(),
+      spendingLimit: this.editSpendingLimit,
+      yearMonth: budget.yearMonth,
+    }).subscribe({
+      next: () => {
+        this.editSaving.set(false);
+        this.showEditModal.set(false);
+        this.budgetToEdit.set(null);
+        this.loadBudgets();
+      },
+      error: () => {
+        this.editError.set(this.translate.instant('budgets.errors.updateFailed'));
+        this.editSaving.set(false);
+      }
+    });
+  }
+
+  openDeleteModal(budget: BudgetRow): void {
+    this.budgetToDelete.set(budget);
+    this.deleteError.set(null);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    if (this.deleteSaving()) return;
+    this.showDeleteModal.set(false);
+    this.budgetToDelete.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmDelete(): void {
+    const budget = this.budgetToDelete();
+    if (!budget || this.deleteSaving()) return;
+
+    this.deleteSaving.set(true);
+    this.deleteError.set(null);
+    this.budgetService.deleteBudget(budget.id).subscribe({
+      next: () => {
+        this.deleteSaving.set(false);
+        this.showDeleteModal.set(false);
+        this.budgetToDelete.set(null);
+        this.loadBudgets();
+      },
+      error: () => {
+        this.deleteError.set(this.translate.instant('budgets.errors.deleteFailed'));
+        this.deleteSaving.set(false);
       }
     });
   }

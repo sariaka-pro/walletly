@@ -25,6 +25,7 @@
             <th>{{ 'transactions.category' | translate }}</th>
             @if (isAdmin) { <th>{{ 'transactions.user' | translate }}</th> }
             <th class="text-right">{{ 'transactions.amount' | translate }}</th>
+            @if (!isAdmin) { <th class="tx-actions-heading">{{ 'transactions.actions' | translate }}</th> }
           </tr>
         </thead>
         <tbody>
@@ -41,6 +42,19 @@
                   {{ tx.amount | number:'1.2-2' }}€
                 </span>
               </td>
+              @if (!isAdmin) {
+                <td class="tx-actions">
+                  <button
+                    type="button"
+                    class="btn-delete"
+                    (click)="openDeleteModal(tx)"
+                    [attr.aria-label]="'transactions.delete' | translate"
+                    [title]="'transactions.delete' | translate"
+                  >
+                    <span class="material-icons" aria-hidden="true">delete</span>
+                  </button>
+                </td>
+              }
             </tr>
           }
         </tbody>
@@ -104,5 +118,33 @@
       </div>
     </div>
   </div>
+  }
+
+  <!-- Modal Delete Transaction (USER only) -->
+  @if (showDeleteModal()) {
+    <div class="modal-overlay" (click)="closeDeleteModal()">
+      <div class="modal modal--delete" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'transactions.deleteModal.title' | translate }}</h3>
+        <p class="modal-body">
+          {{ 'transactions.deleteModal.question' | translate }}
+          <strong>{{ transactionToDelete()?.label }}</strong>
+          ({{ getDeleteAmount() | number:'1.2-2' }}€) ?
+          {{ 'transactions.deleteModal.irreversible' | translate }}
+        </p>
+
+        @if (deleteError()) {
+          <p class="form-error">{{ deleteError() }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeDeleteModal()" [disabled]="deleteSaving()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="button" class="btn-delete-confirm" (click)="confirmDelete()" [disabled]="deleteSaving()">
+            {{ deleteSaving() ? ('transactions.deleting' | translate) : ('transactions.delete' | translate) }}
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>

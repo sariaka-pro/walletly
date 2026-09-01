@@ -1,6 +1,7 @@
 package com.walletly.walletly_backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import com.walletly.walletly_backend.model.Budget;
 import com.walletly.walletly_backend.model.Category;
 import com.walletly.walletly_backend.model.Expense;
 import com.walletly.walletly_backend.model.User;
+import com.walletly.walletly_backend.exception.BadRequestException;
 import com.walletly.walletly_backend.repository.CategoryRepository;
 import com.walletly.walletly_backend.repository.ExpenseRepository;
 
@@ -112,6 +114,58 @@ class ExpenseServiceTest {
 
         verify(budgetService).updateBudgetSpent(budget);
         verify(budgetService, never()).getBudgetByYearMonth(user.getId(), budget.getYearMonth());
+    }
+
+    @Test
+    void createExpenseRejectsBudgetFromAnotherMonth() {
+        User user = User.builder().id(1L).email("user@example.com").build();
+        Category category = Category.builder().id(5L).name("Courses").user(user).build();
+        Budget julyBudget = Budget.builder()
+            .id(10L).yearMonth(YearMonth.of(2026, 7)).user(user).build();
+        Expense expense = Expense.builder()
+            .amount(BigDecimal.TEN)
+            .description("Courses")
+            .date(LocalDate.of(2026, 3, 15))
+            .category(Category.builder().id(5L).build())
+            .budget(Budget.builder().id(10L).build())
+            .build();
+        authenticate(user);
+        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
+        when(budgetService.getBudgetById(10L)).thenReturn(julyBudget);
+
+        assertThrows(BadRequestException.class, () -> expenseService.createExpense(expense));
+
+        verify(expenseRepository, never()).save(expense);
+        verify(budgetService, never()).updateBudgetSpent(julyBudget);
+    }
+
+    @Test
+    void updateExpenseRejectsBudgetFromAnotherMonth() {
+        User user = User.builder().id(1L).email("user@example.com").build();
+        Category category = Category.builder().id(5L).name("Courses").user(user).build();
+        Budget marchBudget = Budget.builder()
+            .id(10L).yearMonth(YearMonth.of(2026, 3)).user(user).build();
+        Budget julyBudget = Budget.builder()
+            .id(11L).yearMonth(YearMonth.of(2026, 7)).user(user).build();
+        Expense existing = Expense.builder()
+            .id(100L).amount(BigDecimal.TEN).description("Courses")
+            .date(LocalDate.of(2026, 3, 10)).category(category)
+            .budget(marchBudget).user(user).build();
+        Expense update = Expense.builder()
+            .amount(BigDecimal.valueOf(20)).description("Courses semaine")
+            .date(LocalDate.of(2026, 3, 20))
+            .category(Category.builder().id(5L).build())
+            .budget(Budget.builder().id(11L).build()).build();
+        authenticate(user);
+        when(expenseRepository.findById(100L)).thenReturn(Optional.of(existing));
+        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
+        when(budgetService.getBudgetById(11L)).thenReturn(julyBudget);
+
+        assertThrows(BadRequestException.class, () -> expenseService.updateExpense(100L, update));
+
+        verify(expenseRepository, never()).save(existing);
+        verify(budgetService, never()).updateBudgetSpent(julyBudget);
+        verify(budgetService, never()).updateBudgetSpent(marchBudget);
     }
 
     private void authenticate(User user) {

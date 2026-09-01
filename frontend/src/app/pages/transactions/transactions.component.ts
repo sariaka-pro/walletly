@@ -49,6 +49,12 @@ export class TransactionsComponent implements OnInit {
   categories = signal<Category[]>([]);
   budgets = signal<Budget[]>([]);
 
+  // --- Modal Delete Transaction ---
+  showDeleteModal = signal(false);
+  transactionToDelete = signal<TxRow | null>(null);
+  deleteSaving = signal(false);
+  deleteError = signal<string | null>(null);
+
   constructor(
     private expenseService: ExpenseService,
     private adminService: AdminService,
@@ -131,6 +137,43 @@ export class TransactionsComponent implements OnInit {
 
   closeModal(): void {
     this.showModal.set(false);
+  }
+
+  openDeleteModal(transaction: TxRow): void {
+    this.transactionToDelete.set(transaction);
+    this.deleteError.set(null);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    if (this.deleteSaving()) return;
+    this.showDeleteModal.set(false);
+    this.transactionToDelete.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmDelete(): void {
+    const transaction = this.transactionToDelete();
+    if (!transaction || this.deleteSaving()) return;
+
+    this.deleteSaving.set(true);
+    this.deleteError.set(null);
+    this.expenseService.deleteExpense(transaction.id).subscribe({
+      next: () => {
+        this.deleteSaving.set(false);
+        this.showDeleteModal.set(false);
+        this.transactionToDelete.set(null);
+        this.loadTransactions();
+      },
+      error: () => {
+        this.deleteError.set(this.translate.instant('transactions.errors.deleteFailed'));
+        this.deleteSaving.set(false);
+      }
+    });
+  }
+
+  getDeleteAmount(): number {
+    return Math.abs(this.transactionToDelete()?.amount ?? 0);
   }
 
   saveTransaction(): void {

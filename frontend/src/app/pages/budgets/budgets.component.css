@@ -174,6 +174,48 @@
   color: var(--app-text);
 }
 
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-hint {
+  color: var(--app-text-subtle);
+  font-size: 11px;
+}
+
+.modal--delete {
+  width: 400px;
+}
+
+.modal-body {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.modal-body strong {
+  color: var(--app-text);
+}
+
+.btn-delete-confirm {
+  padding: 8px 18px;
+  background: var(--app-danger);
+  color: var(--app-ink-on-dark);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--app-font);
+}
+
+.btn-delete-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .state-msg {
   color: var(--app-text-muted);
   font-size: 13px;
@@ -266,6 +308,39 @@
 
 .budget-pct--danger {
   color: var(--app-danger);
+}
+
+.budget-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.btn-icon-action .material-icons {
+  font-size: 18px;
+}
+
+.btn-edit:hover {
+  color: var(--app-primary);
+  background: var(--app-surface-3);
+}
+
+.btn-delete:hover {
+  color: var(--app-danger);
+  background: rgba(255, 123, 107, 0.14);
 }
 
 .progress-track {

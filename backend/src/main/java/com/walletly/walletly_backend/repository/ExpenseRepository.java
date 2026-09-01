@@ -19,6 +19,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // Compte le nombre de dépenses d'un utilisateur.
     long countByUser_Id(Long userId);
 
+    boolean existsByBudget_Id(Long budgetId);
+
     // Retourne le montant total des dépenses de la plateforme.
     @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e")
     java.math.BigDecimal getTotalExpensesAmount();

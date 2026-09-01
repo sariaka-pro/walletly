@@ -9,6 +9,7 @@
     "cancel": "Annuler",
     "create": "Créer",
     "add": "Ajouter",
+    "save": "Enregistrer",
     "saving": "Enregistrement..."
   },
   "shell": {
@@ -83,6 +84,31 @@
     "overview": "Vue d'ensemble",
     "hello": "Bonjour",
     "subtitle": "Une vue claire et structurée de tes finances.",
+    "period": {
+      "thisMonth": "Ce mois",
+      "lastMonth": "Mois dernier",
+      "thisYear": "Cette année",
+      "last12Months": "12 derniers mois"
+    },
+    "kpis": {
+      "balance": "Solde",
+      "thisMonth": "Ce mois",
+      "transactions": "Transactions",
+      "users": "Utilisateurs",
+      "expenses": "Dépenses",
+      "categories": "Catégories"
+    },
+    "actions": {
+      "addExpense": {
+        "title": "Ajouter une dépense",
+        "description": "Saisis rapidement une nouvelle dépense"
+      },
+      "transfer": {
+        "title": "Transférer",
+        "description": "Déplace de l'argent entre budgets"
+      }
+    },
+    "globalExpenses": "Dépenses globales",
     "expensesByCategory": "Dépenses par catégorie",
     "total": "Total",
     "recentTransactions": "Dernières transactions",
@@ -101,6 +127,9 @@
     "category": "Catégorie",
     "amount": "Montant",
     "user": "Utilisateur",
+    "actions": "Actions",
+    "delete": "Supprimer",
+    "deleting": "Suppression...",
     "empty": "Aucune transaction pour le moment.",
     "errors": {
       "loadFailed": "Impossible de charger les transactions.",
@@ -109,7 +138,8 @@
       "categoryRequired": "Sélectionne une catégorie.",
       "newCategoryNameRequired": "Entre le nom de la nouvelle catégorie.",
       "budgetRequired": "Sélectionne un budget.",
-      "createFailed": "Erreur lors de la création de la transaction."
+      "createFailed": "Erreur lors de la création de la transaction.",
+      "deleteFailed": "Impossible de supprimer cette dépense."
     },
     "modal": {
       "title": "Ajouter une transaction",
@@ -123,11 +153,19 @@
         "description": "Ex: Courses",
         "newCategoryName": "Ex: Transport"
       }
+    },
+    "deleteModal": {
+      "title": "Supprimer la dépense",
+      "question": "Voulez-vous vraiment supprimer la dépense",
+      "irreversible": "Cette action est irréversible."
     }
   },
   "budgets": {
     "title": "Budgets",
     "newBudget": "Nouveau budget",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleting": "Suppression...",
     "name": "Nom",
     "limit": "Plafond",
     "spent": "Dépensé",
@@ -138,7 +176,9 @@
       "loadFailed": "Impossible de charger les budgets.",
       "nameLimitRequired": "Nom et limite de dépense sont obligatoires.",
       "periodRequired": "La période est obligatoire.",
-      "createFailed": "Erreur lors de la création du budget."
+      "createFailed": "Erreur lors de la création du budget.",
+      "updateFailed": "Impossible de modifier ce budget.",
+      "deleteFailed": "Impossible de supprimer ce budget. Supprimez d'abord les dépenses qui lui sont associées."
     },
     "modal": {
       "title": "Nouveau budget",
@@ -147,6 +187,15 @@
       "placeholders": {
         "name": "Ex: Alimentation"
       }
+    },
+    "editModal": {
+      "title": "Modifier le budget",
+      "periodLocked": "Le mois ne peut pas être modifié après la création du budget."
+    },
+    "deleteModal": {
+      "title": "Supprimer le budget",
+      "question": "Voulez-vous vraiment supprimer le budget",
+      "irreversible": "Cette action est irréversible."
     }
   },
   "savingsGoals": {

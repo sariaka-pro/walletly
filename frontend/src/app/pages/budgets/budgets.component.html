@@ -35,6 +35,16 @@
             <span class="budget-pct" [class.budget-pct--danger]="budget.spent > budget.allocated">
               {{ getProgressPercent(budget) | number:'1.0-0' }}%
             </span>
+            @if (!isAdmin) {
+              <div class="budget-actions">
+                <button type="button" class="btn-icon-action btn-edit" (click)="openEditModal(budget)" [title]="'budgets.edit' | translate" [attr.aria-label]="'budgets.edit' | translate">
+                  <span class="material-icons" aria-hidden="true">edit</span>
+                </button>
+                <button type="button" class="btn-icon-action btn-delete" (click)="openDeleteModal(budget)" [title]="'budgets.delete' | translate" [attr.aria-label]="'budgets.delete' | translate">
+                  <span class="material-icons" aria-hidden="true">delete</span>
+                </button>
+              </div>
+            }
           </div>
           <div class="progress-track">
             <div
@@ -75,6 +85,65 @@
           <button class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button class="btn-save" (click)="saveBudget()" [disabled]="formSaving()">
             {{ formSaving() ? ('common.saving' | translate) : ('common.create' | translate) }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Edit Budget (USER only) -->
+  @if (showEditModal()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+      <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'budgets.editModal.title' | translate }}</h3>
+
+        @if (editError()) {
+          <p class="form-error">{{ editError() }}</p>
+        }
+
+        <div class="form-group">
+          <label>{{ 'budgets.name' | translate }} *</label>
+          <input type="text" [(ngModel)]="editName" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'budgets.modal.limitWithCurrency' | translate }} *</label>
+          <input type="number" [(ngModel)]="editSpendingLimit" min="1" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'budgets.modal.period' | translate }}</label>
+          <input type="month" [value]="budgetToEdit()?.yearMonth" class="form-input" disabled />
+          <span class="form-hint">{{ 'budgets.editModal.periodLocked' | translate }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeEditModal()" [disabled]="editSaving()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn-save" (click)="saveBudgetEdit()" [disabled]="editSaving()">
+            {{ editSaving() ? ('common.saving' | translate) : ('common.save' | translate) }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Delete Budget (USER only) -->
+  @if (showDeleteModal()) {
+    <div class="modal-overlay" (click)="closeDeleteModal()">
+      <div class="modal modal--delete" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'budgets.deleteModal.title' | translate }}</h3>
+        <p class="modal-body">
+          {{ 'budgets.deleteModal.question' | translate }}
+          <strong>{{ budgetToDelete()?.category }}</strong> ?
+          {{ 'budgets.deleteModal.irreversible' | translate }}
+        </p>
+
+        @if (deleteError()) {
+          <p class="form-error">{{ deleteError() }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeDeleteModal()" [disabled]="deleteSaving()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn-delete-confirm" (click)="confirmDelete()" [disabled]="deleteSaving()">
+            {{ deleteSaving() ? ('budgets.deleting' | translate) : ('budgets.delete' | translate) }}
           </button>
         </div>
       </div>

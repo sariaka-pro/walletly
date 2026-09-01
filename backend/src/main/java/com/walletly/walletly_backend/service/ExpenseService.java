@@ -97,6 +97,8 @@ public class ExpenseService {
         throw new ForbiddenException(ErrorMessages.BUDGET_ACCESS_DENIED);
     }
 
+    validateExpenseMatchesBudgetMonth(newExpenseData, budget);
+
     /// On associe les vraies entités
     newExpenseData.setDescription(inputSanitizer.sanitizePlainText(newExpenseData.getDescription(), "expense.description"));
     newExpenseData.setCategory(category);
@@ -174,6 +176,8 @@ public class ExpenseService {
             throw new ForbiddenException(ErrorMessages.BUDGET_ACCESS_DENIED);
         }
 
+        validateExpenseMatchesBudgetMonth(newExpenseData, newBudget);
+
         Budget oldBudget = existingExpense.getBudget();
 
         /// Mise à jour des champs
@@ -195,6 +199,13 @@ public class ExpenseService {
         }
 
         return updated;
+    }
+
+    private void validateExpenseMatchesBudgetMonth(Expense expense, Budget budget) {
+        YearMonth expenseMonth = YearMonth.from(expense.getDate());
+        if (!expenseMonth.equals(budget.getYearMonth())) {
+            throw new BadRequestException(ErrorMessages.EXPENSE_BUDGET_MONTH_MISMATCH);
+        }
     }
 
     // 5️ - Supprimer une dépense
@@ -227,7 +238,7 @@ public class ExpenseService {
      * Utilisé par BudgetService pour calculer currentSpent
      */
     public BigDecimal getTotalByUserAndMonth(Long userId, YearMonth yearMonth) {
-        // ✅ Passer year et month séparément
+        // Passer year et month séparément
     List<Expense> expenses = expenseRepository.findByUserAndYearMonth(userId, yearMonth.getYear(), yearMonth.getMonthValue());  
         return expenses.stream()
             .map(Expense::getAmount)

@@ -17,6 +17,7 @@ import com.walletly.walletly_backend.model.Budget;
 import com.walletly.walletly_backend.model.User;
 import com.walletly.walletly_backend.model.enums.BudgetPeriod;
 import com.walletly.walletly_backend.repository.BudgetRepository;
+import com.walletly.walletly_backend.repository.ExpenseRepository;
 
 @Service
 public class BudgetService {
@@ -32,6 +33,9 @@ public class BudgetService {
 
     @Autowired
     private InputSanitizer inputSanitizer;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     // ============ CRUD DE BASE ============
 
@@ -127,6 +131,10 @@ public class BudgetService {
         // Sécurité : vérifier que c'est le bon utilisateur
         if (!budget.getUser().getId().equals(userId)) {
             throw new ForbiddenException(ErrorMessages.BUDGET_ACCESS_DENIED);
+        }
+
+        if (expenseRepository.existsByBudget_Id(budgetId)) {
+            throw new BadRequestException(ErrorMessages.BUDGET_HAS_EXPENSES);
         }
 
         budgetRepository.delete(budget);

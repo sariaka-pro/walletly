@@ -14,6 +14,7 @@ public class ErrorMessages {
     public static final String EXPENSE_DESCRIPTION_LENGTH = "Description must be field";
     public static final String EXPENSE_DATE_REQUIRED = "Date is required"; 
     public static final String EXPENSE_DATE_IN_FUTURE = "Date cannot be in the future";
+    public static final String EXPENSE_BUDGET_MONTH_MISMATCH = "Expense date must match the budget month";
 
 
     // ERROR CATEGORY 
@@ -44,6 +45,7 @@ public class ErrorMessages {
     public static final String BUDGET_NOT_NULL = "Budget cannot be null";
     public static final String BUDGET_DATE_IN_FUTURE = "Date cannot be in the future";
     public static final String BUDGET_REQUIRED = "Budget is required";
+    public static final String BUDGET_HAS_EXPENSES = "Budget cannot be deleted while it contains expenses";
 
     
     // GENERIC ERROR 
@@ -57,5 +59,3 @@ public class ErrorMessages {
     public static final String SAVINGS_GOAL_TARGET_INVALID = "Target amount must be positive";
 
 }
-
-
