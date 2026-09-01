@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.walletly.walletly_backend.exception.ErrorMessages;
-import com.walletly.walletly_backend.exception.ForbiddenException;
 import com.walletly.walletly_backend.exception.NotFoundException;
 import com.walletly.walletly_backend.model.SavingsGoal;
 import com.walletly.walletly_backend.model.User;
@@ -44,8 +43,8 @@ public class SavingsGoalService {
     /**
      * Récupérer un savings goal par ID
      */
-    public SavingsGoal getById(Long id) {
-        return savingsGoalRepository.findById(id)
+    public SavingsGoal getById(Long id, Long userId) {
+        return savingsGoalRepository.findByIdAndUser_Id(id, userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessages.SAVINGS_GOAL_NOT_FOUND));
     }
 
@@ -53,12 +52,7 @@ public class SavingsGoalService {
      * Modifier un savings goal (nom, targetAmount, currentAmount, deadline)
      */
     public SavingsGoal updateSavingsGoal(Long id, SavingsGoal updated, Long userId) {
-        SavingsGoal existing = getById(id);
-
-        // Vérifier que le savings goal appartient bien à l'utilisateur
-        if (!existing.getUser().getId().equals(userId)) {
-            throw new ForbiddenException(ErrorMessages.ACCESS_DENIED);
-        }
+        SavingsGoal existing = getById(id, userId);
 
         existing.setName(inputSanitizer.sanitizePlainText(updated.getName(), "savingsGoal.name"));
         existing.setTargetAmount(updated.getTargetAmount());
@@ -72,11 +66,7 @@ public class SavingsGoalService {
      * Supprimer un savings goal
      */
     public void deleteSavingsGoal(Long id, Long userId) {
-        SavingsGoal existing = getById(id);
-
-        if (!existing.getUser().getId().equals(userId)) {
-            throw new ForbiddenException(ErrorMessages.ACCESS_DENIED);
-        }
+        SavingsGoal existing = getById(id, userId);
 
         savingsGoalRepository.delete(existing);
     }

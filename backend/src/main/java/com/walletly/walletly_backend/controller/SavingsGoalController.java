@@ -49,7 +49,7 @@ public class SavingsGoalController {
     public ResponseEntity<SavingsGoal> getSavingsGoalById(
             @PathVariable Long id,
             @AuthenticationPrincipal User currentUser) {
-        SavingsGoal goal = savingsGoalService.getById(id);
+        SavingsGoal goal = savingsGoalService.getById(id, currentUser.getId());
         return ResponseEntity.ok(goal);
     }
 
