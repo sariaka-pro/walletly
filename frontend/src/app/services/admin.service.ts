@@ -5,7 +5,6 @@ import {
   AdminBudget,
   AdminExpense,
   AdminGlobalStats,
-  AdminSavingsGoal,
   AdminUserDetails,
   AdminUserSummary,
   CreateAdminUserPayload,
@@ -64,8 +63,4 @@ export class AdminService {
     return this.http.get<AdminBudget[]>(`${this.apiUrl}/budgets`);
   }
 
-  // Tous les savings goals de tous les utilisateurs
-  getAllSavingsGoals(): Observable<AdminSavingsGoal[]> {
-    return this.http.get<AdminSavingsGoal[]>(`${this.apiUrl}/savings-goals`);
-  }
 }

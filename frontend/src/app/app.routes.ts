@@ -3,7 +3,6 @@ import { authGuard } from './guards/auth.guard';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { TransactionsComponent } from './pages/transactions/transactions.component';
 import { BudgetsComponent } from './pages/budgets/budgets.component';
-import { SavingsGoalsPageComponent } from './pages/savings-goals/savings-goals.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './components/login/login.component';
 import { AppShellComponent } from './layout/app-shell/app-shell.component';
@@ -52,17 +51,6 @@ export const routes: Routes = [
         },
       },
       {
-        path: 'savings-goals',
-        component: SavingsGoalsPageComponent,
-        data: {
-          breadcrumbs: [
-            { label: 'breadcrumbs.home', url: '/dashboard' },
-            { label: 'breadcrumbs.savingsGoals' },
-          ],
-          tabs: ['Active', 'Completed'],
-        },
-      },
-      {
         path: 'admin',
         component: AdminComponent,
         canActivate: [adminGuard],
@@ -77,4 +65,3 @@ export const routes: Routes = [
     ],
   },
 ];
-

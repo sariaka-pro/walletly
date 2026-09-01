@@ -52,10 +52,4 @@ public class ErrorMessages {
     public static final String INTERNAL_SERVER_ERROR = "Internal server error";
     public static final String XSS_CONTENT_NOT_ALLOWED = "HTML/JavaScript content is not allowed in field: ";
 
-    // SAVINGS GOAL
-    public static final String SAVINGS_GOAL_NOT_FOUND = "Savings goal not found";
-    public static final String SAVINGS_GOAL_NAME_REQUIRED = "Savings goal must have a name";
-    public static final String SAVINGS_GOAL_TARGET_REQUIRED = "Target amount is required";
-    public static final String SAVINGS_GOAL_TARGET_INVALID = "Target amount must be positive";
-
 }

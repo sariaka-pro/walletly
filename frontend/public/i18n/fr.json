@@ -23,7 +23,6 @@
     "dashboard": "Tableau de bord",
     "transactions": "Transactions",
     "budgets": "Budgets",
-    "savingsGoals": "Objectifs d'épargne",
     "admin": "Administration"
   },
   "auth": {
@@ -75,7 +74,6 @@
     "dashboard": "Tableau de bord",
     "transactions": "Transactions",
     "budgets": "Budgets",
-    "savingsGoals": "Objectifs d'épargne",
     "admin": "Administration",
     "logout": "Déconnexion"
   },
@@ -196,30 +194,6 @@
       "title": "Supprimer le budget",
       "question": "Voulez-vous vraiment supprimer le budget",
       "irreversible": "Cette action est irréversible."
-    }
-  },
-  "savingsGoals": {
-    "title": "Objectifs d'épargne",
-    "newGoal": "Nouvel objectif",
-    "name": "Nom",
-    "target": "Objectif",
-    "saved": "Épargne",
-    "deadline": "Échéance",
-    "user": "Utilisateur",
-    "empty": "Aucun objectif d'épargne pour le moment.",
-    "completed": "Atteint",
-    "errors": {
-      "loadFailed": "Impossible de charger les objectifs d'épargne.",
-      "nameTargetRequired": "Nom et montant cible sont obligatoires.",
-      "createFailed": "Erreur lors de la création de l'objectif."
-    },
-    "modal": {
-      "title": "Nouvel objectif d'épargne",
-      "targetWithCurrency": "Montant cible (€)",
-      "savedWithCurrency": "Montant déjà épargné (€)",
-      "placeholders": {
-        "name": "Ex: Vacances"
-      }
     }
   },
   "admin": {

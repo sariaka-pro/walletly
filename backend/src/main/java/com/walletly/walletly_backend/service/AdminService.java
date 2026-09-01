@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.walletly.walletly_backend.dto.admin.AdminBudgetDto;
 import com.walletly.walletly_backend.dto.admin.AdminExpenseDto;
 import com.walletly.walletly_backend.dto.admin.AdminGlobalStatsDto;
-import com.walletly.walletly_backend.dto.admin.AdminSavingsGoalDto;
 import com.walletly.walletly_backend.dto.admin.AdminUserDetailsDto;
 import com.walletly.walletly_backend.dto.admin.AdminUserSummaryDto;
 import com.walletly.walletly_backend.dto.admin.CreateAdminUserRequest;
@@ -22,13 +21,11 @@ import com.walletly.walletly_backend.exception.ErrorMessages;
 import com.walletly.walletly_backend.exception.NotFoundException;
 import com.walletly.walletly_backend.model.Budget;
 import com.walletly.walletly_backend.model.Expense;
-import com.walletly.walletly_backend.model.SavingsGoal;
 import com.walletly.walletly_backend.model.User;
 import com.walletly.walletly_backend.model.enums.Role;
 import com.walletly.walletly_backend.repository.BudgetRepository;
 import com.walletly.walletly_backend.repository.CategoryRepository;
 import com.walletly.walletly_backend.repository.ExpenseRepository;
-import com.walletly.walletly_backend.repository.SavingsGoalRepository;
 import com.walletly.walletly_backend.repository.UserRepository;
 
 @Service
@@ -38,7 +35,6 @@ public class AdminService {
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
     private final BudgetRepository budgetRepository;
-    private final SavingsGoalRepository savingsGoalRepository;
     private final PasswordEncoder passwordEncoder;
     private final InputSanitizer inputSanitizer;
 
@@ -47,7 +43,6 @@ public class AdminService {
         ExpenseRepository expenseRepository,
         CategoryRepository categoryRepository,
         BudgetRepository budgetRepository,
-        SavingsGoalRepository savingsGoalRepository,
         PasswordEncoder passwordEncoder,
         InputSanitizer inputSanitizer
     ) {
@@ -55,7 +50,6 @@ public class AdminService {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
         this.budgetRepository = budgetRepository;
-        this.savingsGoalRepository = savingsGoalRepository;
         this.passwordEncoder = passwordEncoder;
         this.inputSanitizer = inputSanitizer;
     }
@@ -187,13 +181,6 @@ public class AdminService {
             .toList();
     }
 
-    // Retourne tous les objectifs d'epargne de la plateforme dans un format adapté à l'admin.
-    public List<AdminSavingsGoalDto> getAllSavingsGoals() {
-        return savingsGoalRepository.findAll().stream()
-            .map(this::toAdminSavingsGoalDto)
-            .toList();
-    }
-
     @Transactional
     // Change le rôle d'un utilisateur (USER/ADMIN).
     public void changeUserRole(Long userId, Role role) {
@@ -248,16 +235,4 @@ public class AdminService {
             .build();
     }
 
-    // Transforme l'entité SavingsGoal en DTO admin sans exposer l'entité complète.
-    private AdminSavingsGoalDto toAdminSavingsGoalDto(SavingsGoal savingsGoal) {
-        return AdminSavingsGoalDto.builder()
-            .id(savingsGoal.getId())
-            .name(savingsGoal.getName())
-            .targetAmount(savingsGoal.getTargetAmount())
-            .currentAmount(savingsGoal.getCurrentAmount())
-            .deadline(savingsGoal.getDeadline())
-            .userId(savingsGoal.getUser() != null ? savingsGoal.getUser().getId() : null)
-            .userEmail(savingsGoal.getUser() != null ? savingsGoal.getUser().getEmail() : null)
-            .build();
-    }
 }

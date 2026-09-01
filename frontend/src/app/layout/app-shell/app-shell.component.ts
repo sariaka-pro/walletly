@@ -29,7 +29,6 @@ export class AppShellComponent implements OnInit {
     { labelKey: 'nav.dashboard', path: '/dashboard', icon: 'dashboard' },
     { labelKey: 'nav.transactions', path: '/transactions', icon: 'swap_horiz' },
     { labelKey: 'nav.budgets', path: '/budgets', icon: 'account_balance_wallet' },
-    { labelKey: 'nav.savingsGoals', path: '/savings-goals', icon: 'savings' },
   ];
 
   get navItems(): NavItem[] {

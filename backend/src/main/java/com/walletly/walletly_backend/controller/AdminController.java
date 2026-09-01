@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.walletly.walletly_backend.dto.admin.AdminBudgetDto;
 import com.walletly.walletly_backend.dto.admin.AdminExpenseDto;
 import com.walletly.walletly_backend.dto.admin.AdminGlobalStatsDto;
-import com.walletly.walletly_backend.dto.admin.AdminSavingsGoalDto;
 import com.walletly.walletly_backend.dto.admin.AdminUserDetailsDto;
 import com.walletly.walletly_backend.dto.admin.AdminUserSummaryDto;
 import com.walletly.walletly_backend.dto.admin.CreateAdminUserRequest;
@@ -96,9 +95,4 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllBudgets());
     }
 
-    // Expose tous les objectifs d'epargne de tous les utilisateurs.
-    @GetMapping("/savings-goals")
-    public ResponseEntity<List<AdminSavingsGoalDto>> getAllSavingsGoals() {
-        return ResponseEntity.ok(adminService.getAllSavingsGoals());
-    }
 }

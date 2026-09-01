@@ -47,16 +47,6 @@ export interface AdminBudget {
   userEmail: string;
 }
 
-export interface AdminSavingsGoal {
-  id: number;
-  name: string;
-  targetAmount: number;
-  currentAmount: number;
-  deadline: string | null;
-  userId: number;
-  userEmail: string;
-}
-
 export interface CreateAdminUserPayload {
   firstName: string;
   lastName: string;
