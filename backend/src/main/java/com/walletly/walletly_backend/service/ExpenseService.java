@@ -3,12 +3,13 @@ package com.walletly.walletly_backend.service;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.walletly.walletly_backend.exception.BadRequestException;
 import com.walletly.walletly_backend.exception.ErrorMessages;
@@ -26,27 +27,24 @@ import com.walletly.walletly_backend.repository.ExpenseRepository;
 public class ExpenseService {
 
     // Déclaration des repositories (accès base de données)
-    @Autowired
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    
-    @Autowired
-    @Lazy // PBBB =  se crée uniquement quand le service est utilisé 
-    private BudgetService budgetService; 
+    private final BudgetService budgetService;
 
-    @Autowired
-    private InputSanitizer inputSanitizer;
+    private final InputSanitizer inputSanitizer;
 
     /// Injection des repositories via le constructeur
     /// Spring injecte automatiquement les dépendances
     public ExpenseService(ExpenseRepository expenseRepository,
-            CategoryRepository categoryRepository,@Lazy BudgetService budgetService) {
+            CategoryRepository categoryRepository,
+            @Lazy BudgetService budgetService,
+            InputSanitizer inputSanitizer) {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
         this.budgetService = budgetService;
+        this.inputSanitizer = inputSanitizer;
     }
 
     private User getCurrentUser() {
@@ -81,20 +79,20 @@ public class ExpenseService {
 
     User currentUser = getCurrentUser();
 
-    /// ✅ Vérifier que la catégorie appartient à l'utilisateur courant
+    /// Vérifier que la catégorie appartient à l'utilisateur courant
     if (!category.getUser().getId().equals(currentUser.getId())) {
         throw new ForbiddenException(ErrorMessages.ACCESS_DENIED);
     }
 
-    /// ✅ Vérifier si le budget est obligatoire
+    /// Vérifier si le budget est obligatoire
     if (newExpenseData.getBudget() == null || newExpenseData.getBudget().getId() == null) {
-        throw new BadRequestException("Budget is required");
+        throw new BadRequestException(ErrorMessages.BUDGET_REQUIRED);
     }
     
-    /// ✅ Récupérer et valider le budget
+    ///  Récupérer et valider le budget
     Budget budget = budgetService.getBudgetById(newExpenseData.getBudget().getId());
 
-    /// ✅ CORRECTED : Vérifier que le budget appartient à l'utilisateur (avec ! pour négation)
+    /// CORRECTED : Vérifier que le budget appartient à l'utilisateur (avec ! pour négation)
     if (!budget.getUser().getId().equals(currentUser.getId())) {
         throw new ForbiddenException(ErrorMessages.BUDGET_ACCESS_DENIED);
     }
@@ -105,10 +103,10 @@ public class ExpenseService {
     newExpenseData.setUser(currentUser);
     newExpenseData.setBudget(budget);
 
-    /// ✅ Sauvegarder la dépense
+    /// Sauvegarder la dépense
     Expense savedExpense = expenseRepository.save(newExpenseData);
 
-    /// ✅ METTRE À JOUR LE BUDGET DU MOIS (une seule fois, direct)
+    /// METTRE À JOUR LE BUDGET DU MOIS (une seule fois, direct)
     budgetService.updateBudgetSpent(budget);
 
     return savedExpense;
@@ -136,6 +134,7 @@ public class ExpenseService {
     }
 
     // 4️ - Mettre à jour une dépense
+    @Transactional
     public Expense updateExpense(Long id, Expense newExpenseData) {
 
         /// On va chercher la dépense existante
@@ -166,21 +165,34 @@ public class ExpenseService {
             throw new ForbiddenException(ErrorMessages.ACCESS_DENIED);
         }
 
+        if (newExpenseData.getBudget() == null || newExpenseData.getBudget().getId() == null) {
+            throw new BadRequestException(ErrorMessages.BUDGET_REQUIRED);
+        }
+
+        Budget newBudget = budgetService.getBudgetById(newExpenseData.getBudget().getId());
+        if (!newBudget.getUser().getId().equals(currentUser.getId())) {
+            throw new ForbiddenException(ErrorMessages.BUDGET_ACCESS_DENIED);
+        }
+
+        Budget oldBudget = existingExpense.getBudget();
+
         /// Mise à jour des champs
         existingExpense.setAmount(newExpenseData.getAmount());
         existingExpense.setDate(newExpenseData.getDate());
         existingExpense.setDescription(inputSanitizer.sanitizePlainText(newExpenseData.getDescription(), "expense.description"));
         existingExpense.setCategory(category);
-
-        // Récupérer l'ancien mois et la nouvelle date
-        int year = newExpenseData.getDate().getYear();
-        int month = newExpenseData.getDate().getMonthValue();
+        existingExpense.setBudget(newBudget);
 
         // Sauvegarder
         Expense updated = expenseRepository.save(existingExpense);
 
-        // METTRE À JOUR LE BUDGET DU MOIS
-        updateBudgetAfterExpenseChange(currentUser.getId(), year, month);
+        // Toujours recalculer le budget qui reçoit la dépense.
+        budgetService.updateBudgetSpent(newBudget);
+
+        // Si la dépense a changé de budget, recalculer aussi celui qu'elle quitte.
+        if (oldBudget != null && !Objects.equals(oldBudget.getId(), newBudget.getId())) {
+            budgetService.updateBudgetSpent(oldBudget);
+        }
 
         return updated;
     }
