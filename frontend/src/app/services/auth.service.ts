@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs";
 import { AuthResponse, LoginDto, RegisterDto, User } from "../models/user.model";
 import { HttpClient } from "@angular/common/http";
+import { API_ENDPOINTS } from "../config/api.config";
 
 @Injectable({
     providedIn: 'root'
@@ -10,15 +11,21 @@ import { HttpClient } from "@angular/common/http";
 
 export class AuthService {
 
-    // Url connectée au backend
-    private apiUrl = 'http://localhost:8081/auth'; 
+    private readonly apiUrl = API_ENDPOINTS.auth;
 
     // Token qui permet stopper l'auth partout dès logout 
-    private tokenSubject = new BehaviorSubject<String | null>(this.getToken()); 
+    private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable(); 
 
     // constructor 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+        const token = localStorage.getItem('token');
+        if (token && !this.isTokenExpired(token)) {
+            this.tokenSubject.next(token);
+        } else if (token) {
+            this.clearSession();
+        }
+    }
 
     login(credentials: LoginDto): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
@@ -50,6 +57,10 @@ export class AuthService {
     }
 
     logout(): void {
+        this.clearSession();
+    }
+
+    private clearSession(): void {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('email');
@@ -63,19 +74,40 @@ export class AuthService {
     }
 
     isAuthenticated(): boolean {
-        return !!this.getToken();
+        const token = this.getToken();
+        if (!token) return false;
+
+        if (this.isTokenExpired(token)) {
+            this.clearSession();
+            return false;
+        }
+
+        return true;
     } 
 
+    isTokenExpired(token: string): boolean {
+        const payload = this.getTokenPayload(token);
+        const expiration = payload?.['exp'];
+
+        // Un JWT mal formé ou sans date d'expiration n'est jamais accepté.
+        if (typeof expiration !== 'number') return true;
+
+        return expiration * 1000 <= Date.now();
+    }
+
     getCurrentUserId(): number | null {
+        if (!this.isAuthenticated()) return null;
         const userId = localStorage.getItem('userId');
         return userId ? parseInt(userId) : null; 
     }
 
     getCurrentEmail(): string | null {
+        if (!this.isAuthenticated()) return null;
         return localStorage.getItem('email');
     }
 
     getCurrentFirstName(): string | null {
+        if (!this.isAuthenticated()) return null;
         const fromStorage = localStorage.getItem('firstName');
         if (fromStorage && fromStorage.trim()) {
             return fromStorage.trim();
@@ -132,7 +164,7 @@ export class AuthService {
         const token = this.getToken();
 
         // Pas de token = pas connecté = pas admin
-        if (!token) return false;
+        if (!token || !this.isAuthenticated()) return false;
 
         // On parse le token et on compare le rôle à 'ADMIN'
         return this.getRoleFromToken(token) === 'ADMIN';

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../config/api.config';
 import {
   AdminBudget,
   AdminExpense,
@@ -16,7 +17,7 @@ import {
 })
 export class AdminService {
 
-  private apiUrl = 'http://localhost:8081/api/admin';
+  private readonly apiUrl = API_ENDPOINTS.admin;
 
   constructor(private http: HttpClient) {}
 

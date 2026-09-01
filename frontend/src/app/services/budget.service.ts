@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Budget, CreateBudgetDto } from '../models/budget.model';
+import { API_ENDPOINTS } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BudgetService {
   
-  private apiUrl = 'http://localhost:8081/api/budgets'; 
+  private readonly apiUrl = API_ENDPOINTS.budgets;
 
   constructor(private http: HttpClient) {}
 

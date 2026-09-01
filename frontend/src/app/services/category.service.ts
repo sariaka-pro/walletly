@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../config/api.config';
 import { Category } from '../models/expense.model';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { Category } from '../models/expense.model';
 })
 export class CategoryService {
 
-  private apiUrl = 'http://localhost:8081/api/categories';
+  private readonly apiUrl = API_ENDPOINTS.categories;
 
   constructor(private http: HttpClient) {}
 

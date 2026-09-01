@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateExpenseDto, Expense } from '../models/expense.model';
+import { API_ENDPOINTS } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExpenseService {
 
-  private apiUrl = 'http://localhost:8081/api/expenses'; 
+  private readonly apiUrl = API_ENDPOINTS.expenses;
 
   constructor(private http: HttpClient) {}
 
