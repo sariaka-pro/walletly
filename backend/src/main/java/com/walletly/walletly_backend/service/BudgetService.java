@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import com.walletly.walletly_backend.exception.ForbiddenException;
 import com.walletly.walletly_backend.exception.NotFoundException;
 import com.walletly.walletly_backend.model.Budget;
 import com.walletly.walletly_backend.model.User;
-import com.walletly.walletly_backend.model.enums.BudgetPeriod;
 import com.walletly.walletly_backend.repository.BudgetRepository;
 import com.walletly.walletly_backend.repository.ExpenseRepository;
 
@@ -77,29 +75,13 @@ public class BudgetService {
     }
 
     /**
-     * Récupérer le budget du mois actuel (ou le créer s'il n'existe pas)
+     * Récupérer le budget du mois actuel.
      */
     public Budget getCurrentMonthBudget(Long userId) {
         YearMonth now = YearMonth.now();
 
-        Optional<Budget> budget = budgetRepository.findByUser_IdAndYearMonth(userId, now);
-
-        if (budget.isPresent()) {
-            return budget.get();
-        }
-
-        // Créer automatiquement le budget du mois
-        User user = authService.getUserById(userId);
-        Budget newBudget = Budget.builder()
-            .name(now.toString())
-            .spendingLimit(BigDecimal.valueOf(30000.0))
-            .currentSpent(BigDecimal.ZERO)
-            .period(BudgetPeriod.MONTHLY)
-            .yearMonth(now)
-            .user(user)
-            .build();
-
-        return budgetRepository.save(newBudget);
+        return budgetRepository.findByUser_IdAndYearMonth(userId, now)
+            .orElseThrow(() -> new NotFoundException(ErrorMessages.BUDGET_NOT_FOUND));
     }
 
     /**

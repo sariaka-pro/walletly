@@ -27,6 +27,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,7 +60,7 @@ public class Budget {
 
     @Column(nullable = false)
     @NotNull(message = ErrorMessages.BUDGET_NOT_NULL)
-    @PositiveOrZero(message = ErrorMessages.BUDGET_LIMIT_INVALID)
+    @Positive(message = ErrorMessages.BUDGET_LIMIT_INVALID)
     @JsonDeserialize(using = BigDecimalDeserializer.class) // solution pour erreur 400 bad request. 
     private BigDecimal spendingLimit; // ex: 500€ par mois
 

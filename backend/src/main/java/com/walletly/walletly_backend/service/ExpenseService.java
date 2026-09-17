@@ -64,6 +64,7 @@ public class ExpenseService {
     }
 
     // 2 - Créer une dépense
+    @Transactional
     public Expense createExpense(Expense newExpenseData) {
     /// Vérification : une catégorie est obligatoire
     if (newExpenseData.getCategory() == null
@@ -209,6 +210,7 @@ public class ExpenseService {
     }
 
     // 5️ - Supprimer une dépense
+    @Transactional
     public void deleteExpense(Long id) {
 
         /// On vérifie que la dépense existe

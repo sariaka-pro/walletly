@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.walletly.walletly_backend.exception.ErrorMessages;
 import com.walletly.walletly_backend.model.enums.Role;
 
@@ -49,6 +50,7 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonIgnore
     @NotBlank(message = ErrorMessages.USER_PASSWORD_REQUIRED)
     private String password; 
 
