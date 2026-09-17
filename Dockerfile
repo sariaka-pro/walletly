@@ -22,7 +22,7 @@ FROM nginx:alpine
 COPY frontend/nginx.conf /etc/nginx/nginx.conf
 
 # Copier les fichiers buildés
-COPY --from=builder /app/dist/frontend /usr/share/nginx/html
+COPY --from=builder /app/dist/walletly/browser /usr/share/nginx/html
 
 # Exposer le port
 EXPOSE 4200

@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+.idea
+.vscode
+tmp
+frontend/node_modules
+frontend/dist
+frontend/.angular
+backend/target
+*.log
+.DS_Store

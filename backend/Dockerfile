@@ -1,5 +1,5 @@
 # ── BUILD STAGE ──
-FROM maven:3.9-eclipse-temurin-21 AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,8 @@ COPY backend/src ./src
 RUN mvn clean package -DskipTests
 
 # ── PRODUCTION STAGE ──
-FROM eclipse-temurin:21-jre-alpine
+# La variante Jammy est publiée pour AMD64 et ARM64 (Mac Apple Silicon).
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
@@ -24,7 +25,7 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 
 # Exposer le port
-EXPOSE 8080
+EXPOSE 8081
 
 # Commande de démarrage
 ENTRYPOINT ["java", "-jar", "app.jar"]
