@@ -7,7 +7,7 @@ export interface Budget {
   remaining: number; 
   percentageSpent: number; 
   yearMonth: string; 
-  period: 'MONTHLY' | 'YEARLY'; 
+  period: 'MONTHLY';
   user?: any; 
 }
 

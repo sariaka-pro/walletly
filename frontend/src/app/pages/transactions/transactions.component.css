@@ -125,16 +125,18 @@
 }
 
 .tx-actions-heading {
-  width: 64px;
+  width: 96px;
   text-align: center !important;
 }
 
 .tx-actions {
-  width: 64px;
+  width: 96px;
   text-align: center;
+  white-space: nowrap;
 }
 
-.btn-delete {
+.btn-delete,
+.btn-edit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -152,7 +154,13 @@
   background: rgba(255, 123, 107, 0.14);
 }
 
-.btn-delete .material-icons {
+.btn-edit:hover {
+  color: var(--app-primary);
+  background: rgba(108, 139, 216, 0.14);
+}
+
+.btn-delete .material-icons,
+.btn-edit .material-icons {
   font-size: 18px;
 }
 

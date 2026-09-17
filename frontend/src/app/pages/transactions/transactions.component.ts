@@ -11,6 +11,7 @@ import { AdminExpense } from '../../models/admin.model';
 import { Expense, Category } from '../../models/expense.model';
 import { Budget } from '../../models/budget.model';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
 
 interface TxRow {
   id: number;
@@ -18,6 +19,8 @@ interface TxRow {
   label: string;
   category: string;
   amount: number;
+  categoryId: number;
+  budgetId: number;
   userEmail?: string;
 }
 
@@ -49,6 +52,17 @@ export class TransactionsComponent implements OnInit {
   categories = signal<Category[]>([]);
   budgets = signal<Budget[]>([]);
 
+  // --- Modal Edit Transaction ---
+  showEditModal = signal(false);
+  transactionToEdit = signal<TxRow | null>(null);
+  editDescription = '';
+  editAmount: number | null = null;
+  editDate = '';
+  editCategoryId: number | null = null;
+  editBudgetId: number | null = null;
+  editError = signal<string | null>(null);
+  editSaving = signal(false);
+
   // --- Modal Delete Transaction ---
   showDeleteModal = signal(false);
   transactionToDelete = signal<TxRow | null>(null);
@@ -62,11 +76,15 @@ export class TransactionsComponent implements OnInit {
     private categoryService: CategoryService,
     private budgetService: BudgetService,
     private translate: TranslateService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
     this.loadTransactions();
+    if (!this.isAdmin && this.route.snapshot.queryParamMap.get('action') === 'add') {
+      this.openModal();
+    }
   }
 
   loadTransactions(): void {
@@ -81,6 +99,8 @@ export class TransactionsComponent implements OnInit {
               label: e.description,
               category: e.categoryName ?? '-',
               amount: -Math.abs(e.amount),
+              categoryId: e.categoryId,
+              budgetId: e.budgetId,
               userEmail: e.userEmail,
             }))
           );
@@ -101,6 +121,8 @@ export class TransactionsComponent implements OnInit {
               label: e.description,
               category: e.category?.name ?? '-',
               amount: -Math.abs(e.amount),
+              categoryId: e.category?.id,
+              budgetId: e.budget?.id,
             }))
           );
           this.loading.set(false);
@@ -139,6 +161,72 @@ export class TransactionsComponent implements OnInit {
     this.showModal.set(false);
   }
 
+  openEditModal(transaction: TxRow): void {
+    this.transactionToEdit.set(transaction);
+    this.editDescription = transaction.label;
+    this.editAmount = Math.abs(transaction.amount);
+    this.editDate = transaction.date;
+    this.editCategoryId = transaction.categoryId;
+    this.editBudgetId = transaction.budgetId;
+    this.editError.set(null);
+    this.loadFormOptions(this.editError);
+    this.showEditModal.set(true);
+  }
+
+  closeEditModal(): void {
+    if (this.editSaving()) return;
+    this.showEditModal.set(false);
+    this.transactionToEdit.set(null);
+    this.editError.set(null);
+  }
+
+  saveTransactionEdit(): void {
+    const transaction = this.transactionToEdit();
+    if (!transaction || this.editSaving()) return;
+
+    if (!this.editDescription.trim() || !this.editAmount || this.editAmount <= 0) {
+      this.editError.set(this.translate.instant('transactions.errors.descriptionAmountRequired'));
+      return;
+    }
+    if (!this.editDate || !this.editCategoryId || !this.editBudgetId) {
+      this.editError.set(this.translate.instant('transactions.errors.editFieldsRequired'));
+      return;
+    }
+
+    this.editSaving.set(true);
+    this.expenseService.updateExpense(transaction.id, {
+      description: this.editDescription.trim(),
+      amount: this.editAmount,
+      date: this.editDate,
+      category: { id: this.editCategoryId },
+      budget: { id: this.editBudgetId },
+    }).subscribe({
+      next: () => {
+        this.editSaving.set(false);
+        this.showEditModal.set(false);
+        this.transactionToEdit.set(null);
+        this.loadTransactions();
+      },
+      error: () => {
+        this.editError.set(this.translate.instant('transactions.errors.updateFailed'));
+        this.editSaving.set(false);
+      }
+    });
+  }
+
+  private loadFormOptions(errorSignal: { set(value: string | null): void }): void {
+    forkJoin({
+      categories: this.categoryService.getAllCategories(),
+      budgets: this.budgetService.getAllBudgets(),
+    }).subscribe({
+      next: ({ categories, budgets }) => {
+        this.categories.set(categories);
+        this.budgets.set(budgets);
+      },
+      error: () => errorSignal.set(this.translate.instant('transactions.errors.loadCategoriesBudgetsFailed'))
+    });
+  }
+
   openDeleteModal(transaction: TxRow): void {
     this.transactionToDelete.set(transaction);
     this.deleteError.set(null);
@@ -174,6 +262,11 @@ export class TransactionsComponent implements OnInit {
 
   getDeleteAmount(): number {
     return Math.abs(this.transactionToDelete()?.amount ?? 0);
+  }
+
+  budgetsForDate(date: string): Budget[] {
+    if (!date) return [];
+    return this.budgets().filter(budget => budget.yearMonth === date.slice(0, 7));
   }
 
   saveTransaction(): void {

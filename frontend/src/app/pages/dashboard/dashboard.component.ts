@@ -6,19 +6,14 @@ import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Expense } from '../../models/expense.model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
+import { AdminExpense } from '../../models/admin.model';
 
 interface KpiItem {
   labelKey: string;
   value: string;
   icon: string;
   tone: 'positive' | 'negative' | 'neutral';
-}
-
-interface ActionCard {
-  titleKey: string;
-  descriptionKey: string;
-  icon: string;
-  tone: 'success' | 'danger' | 'info';
 }
 
 interface CategorySlice {
@@ -28,7 +23,7 @@ interface CategorySlice {
   color: string;
 }
 
-type DashboardPeriod = 'this-month' | 'last-month' | 'this-year' | 'last-12-months';
+type DashboardPeriod = 'this-month' | 'last-month' | 'this-year';
 
 interface TxRow {
   label: string;
@@ -47,32 +42,20 @@ interface TxRow {
 })
 export class DashboardComponent implements OnInit {
 
+  isAdmin = false;
+
   periodTabs: { labelKey: string; value: DashboardPeriod }[] = [
     { labelKey: 'dashboard.period.thisMonth', value: 'this-month' },
     { labelKey: 'dashboard.period.lastMonth', value: 'last-month' },
     { labelKey: 'dashboard.period.thisYear', value: 'this-year' },
-    { labelKey: 'dashboard.period.last12Months', value: 'last-12-months' },
   ];
   activePeriod = signal<DashboardPeriod>('this-month');
   displayName = signal<string>('');
-  actionCards: ActionCard[] = [
-    {
-      titleKey: 'dashboard.actions.addExpense.title',
-      descriptionKey: 'dashboard.actions.addExpense.description',
-      icon: 'remove_circle',
-      tone: 'danger'
-    },
-    {
-      titleKey: 'dashboard.actions.transfer.title',
-      descriptionKey: 'dashboard.actions.transfer.description',
-      icon: 'swap_horiz',
-      tone: 'info'
-    },
-  ];
 
   kpis = signal<KpiItem[]>([]);
   recentTransactions = signal<TxRow[]>([]);
   loading = signal(true);
+  error = signal<string | null>(null);
   totalExpenses = signal(0);
   monthlyExpenses = signal(0);
   monthlyTransactions = signal(0);
@@ -96,7 +79,8 @@ export class DashboardComponent implements OnInit {
     this.displayName.set(
       this.buildDisplayName(this.authService.getCurrentFirstName(), this.authService.getCurrentEmail())
     );
-    if (this.authService.isAdmin()) {
+    this.isAdmin = this.authService.isAdmin();
+    if (this.isAdmin) {
       this.loadAdminDashboard();
     } else {
       this.loadUserDashboard();
@@ -104,8 +88,14 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadAdminDashboard(): void {
-    this.adminService.getGlobalStats().subscribe({
-      next: (stats) => {
+    forkJoin({
+      stats: this.adminService.getGlobalStats(),
+      expenses: this.adminService.getAllExpenses(),
+    }).subscribe({
+      next: ({ stats, expenses }) => {
+        const categoryBreakdown = this.buildAdminCategoryBreakdown(expenses);
+        const top = categoryBreakdown[0];
+        const sorted = [...expenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.kpis.set([
           { labelKey: 'dashboard.kpis.users', value: `${stats.totalUsers}`, icon: 'group', tone: 'positive' },
           { labelKey: 'dashboard.kpis.expenses', value: `€ ${Math.abs(stats.totalExpensesAmount).toFixed(2)}`, icon: 'euro', tone: 'negative' },
@@ -113,21 +103,45 @@ export class DashboardComponent implements OnInit {
         ]);
         this.totalExpenses.set(Math.abs(stats.totalExpensesAmount));
         this.monthlyExpenses.set(Math.abs(stats.totalExpensesAmount));
-        this.monthlyTransactions.set(stats.totalUsers);
-        this.topCategory.set('All users');
-        this.topCategoryPercent.set(68);
+        this.monthlyTransactions.set(expenses.length);
+        this.topCategory.set(top?.label ?? 'No category');
+        this.topCategoryPercent.set(top ? Math.round(top.percentage) : 0);
         this.heroValue.set(`€ ${Math.abs(stats.totalExpensesAmount).toFixed(2)}`);
         this.heroCaptionKey.set('dashboard.globalExpenses');
-        this.categorySlices.set([
-          { label: 'Utilisateurs', amount: stats.totalUsers, percentage: 40, color: this.sliceColors[0] },
-          { label: 'Depenses', amount: stats.totalExpensesAmount, percentage: 38, color: this.sliceColors[1] },
-          { label: 'Categories', amount: stats.totalCategories, percentage: 22, color: this.sliceColors[2] },
-        ]);
-        this.chartStyle.set('conic-gradient(#1b2232 0% 40%, #f4c94f 40% 78%, #ff7b6b 78% 100%)');
+        this.categorySlices.set(categoryBreakdown);
+        this.chartStyle.set(this.buildChartStyle(categoryBreakdown));
+        this.recentTransactions.set(sorted.slice(0, 6).map(expense => ({
+          label: expense.description,
+          category: expense.categoryName ?? '-',
+          date: expense.date,
+          amount: Math.abs(Number(expense.amount)),
+        })));
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.error.set('dashboard.errors.loadFailed');
+        this.loading.set(false);
+      },
     });
+  }
+
+  private buildAdminCategoryBreakdown(expenses: AdminExpense[]): CategorySlice[] {
+    const totals = new Map<string, number>();
+    for (const expense of expenses) {
+      const name = expense.categoryName?.trim() || 'Uncategorized';
+      totals.set(name, (totals.get(name) ?? 0) + Math.abs(Number(expense.amount)));
+    }
+
+    const total = [...totals.values()].reduce((sum, amount) => sum + amount, 0);
+    return [...totals.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, amount], index) => ({
+        label,
+        amount,
+        percentage: total > 0 ? (amount / total) * 100 : 0,
+        color: this.sliceColors[index % this.sliceColors.length],
+      }));
   }
 
   private loadUserDashboard(): void {
@@ -138,7 +152,10 @@ export class DashboardComponent implements OnInit {
         this.refreshVisualData();
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.error.set('dashboard.errors.loadFailed');
+        this.loading.set(false);
+      }
     });
   }
 
@@ -173,7 +190,7 @@ export class DashboardComponent implements OnInit {
         label: expense.description,
         category: expense.category?.name ?? '-',
         date: expense.date,
-        amount: -Math.abs(Number(expense.amount)),
+        amount: Math.abs(Number(expense.amount)),
       }))
     );
 
@@ -217,10 +234,6 @@ export class DashboardComponent implements OnInit {
         }
         case 'this-year':
           return date.getFullYear() === currentYear;
-        case 'last-12-months': {
-          const limit = new Date(currentYear, currentMonth - 11, 1);
-          return date >= limit;
-        }
         case 'this-month':
         default:
           return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
@@ -272,7 +285,6 @@ export class DashboardComponent implements OnInit {
     switch (period) {
       case 'last-month': return 'dashboard.period.lastMonth';
       case 'this-year': return 'dashboard.period.thisYear';
-      case 'last-12-months': return 'dashboard.period.last12Months';
       case 'this-month':
       default:
         return 'dashboard.period.thisMonth';

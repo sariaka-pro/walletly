@@ -36,10 +36,8 @@
     },
     "login": {
       "title": "Connecte-toi à ton compte",
-      "subtitle": "Utilise tes identifiants pour continuer.",
       "button": "Se connecter",
       "registerLink": "Créer un compte",
-      "forgotPassword": "Mot de passe oublié ?",
       "noAccount": "Pas encore inscrit ?",
       "errors": {
         "required": "Email et mot de passe sont obligatoires.",
@@ -78,6 +76,9 @@
     "logout": "Déconnexion"
   },
   "dashboard": {
+    "errors": {
+      "loadFailed": "Impossible de charger les données du tableau de bord. Vérifie que le backend est démarré."
+    },
     "title": "Tableau de bord",
     "overview": "Vue d'ensemble",
     "hello": "Bonjour",
@@ -85,8 +86,7 @@
     "period": {
       "thisMonth": "Ce mois",
       "lastMonth": "Mois dernier",
-      "thisYear": "Cette année",
-      "last12Months": "12 derniers mois"
+      "thisYear": "Cette année"
     },
     "kpis": {
       "balance": "Solde",
@@ -95,16 +95,6 @@
       "users": "Utilisateurs",
       "expenses": "Dépenses",
       "categories": "Catégories"
-    },
-    "actions": {
-      "addExpense": {
-        "title": "Ajouter une dépense",
-        "description": "Saisis rapidement une nouvelle dépense"
-      },
-      "transfer": {
-        "title": "Transférer",
-        "description": "Déplace de l'argent entre budgets"
-      }
     },
     "globalExpenses": "Dépenses globales",
     "expensesByCategory": "Dépenses par catégorie",
@@ -126,6 +116,7 @@
     "amount": "Montant",
     "user": "Utilisateur",
     "actions": "Actions",
+    "edit": "Modifier",
     "delete": "Supprimer",
     "deleting": "Suppression...",
     "empty": "Aucune transaction pour le moment.",
@@ -137,6 +128,8 @@
       "newCategoryNameRequired": "Entre le nom de la nouvelle catégorie.",
       "budgetRequired": "Sélectionne un budget.",
       "createFailed": "Erreur lors de la création de la transaction.",
+      "updateFailed": "Impossible de modifier cette dépense.",
+      "editFieldsRequired": "La date, la catégorie et le budget sont obligatoires.",
       "deleteFailed": "Impossible de supprimer cette dépense."
     },
     "modal": {
@@ -156,6 +149,9 @@
       "title": "Supprimer la dépense",
       "question": "Voulez-vous vraiment supprimer la dépense",
       "irreversible": "Cette action est irréversible."
+    },
+    "editModal": {
+      "title": "Modifier la dépense"
     }
   },
   "budgets": {

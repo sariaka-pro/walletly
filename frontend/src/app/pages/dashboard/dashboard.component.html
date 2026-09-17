@@ -2,6 +2,8 @@
 
   @if (loading()) {
     <p class="state-msg">{{ 'app.loading' | translate }}</p>
+  } @else if (error()) {
+    <p class="state-msg state-msg--error">{{ error()! | translate }}</p>
   } @else {
 
     <section class="dashboard-hero">
@@ -11,18 +13,26 @@
         <p class="hero-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
       </div>
 
-      <div class="period-switcher">
-        @for (period of periodTabs; track period.value) {
-          <button
-            type="button"
-            class="period-chip"
-            [class.period-chip--active]="activePeriod() === period.value"
-            (click)="setPeriod(period.value)"
-          >
-            {{ period.labelKey | translate }}
-          </button>
-        }
-      </div>
+      @if (!isAdmin) {
+        <div class="dashboard-toolbar">
+          <div class="period-switcher">
+            @for (period of periodTabs; track period.value) {
+              <button
+                type="button"
+                class="period-chip"
+                [class.period-chip--active]="activePeriod() === period.value"
+                (click)="setPeriod(period.value)"
+              >
+                {{ period.labelKey | translate }}
+              </button>
+            }
+          </div>
+          <a class="add-expense-button" routerLink="/transactions" [queryParams]="{ action: 'add' }">
+            <span class="material-icons" aria-hidden="true">add</span>
+            {{ 'transactions.add' | translate }}
+          </a>
+        </div>
+      }
     </section>
 
     <section class="summary-grid">
@@ -34,18 +44,6 @@
           </div>
           <span class="material-icons kpi-icon">{{ kpi.icon }}</span>
         </article>
-      }
-    </section>
-
-    <section class="action-grid">
-      @for (action of actionCards; track action.titleKey) {
-        <a class="action-card" [class.action-card--accent]="action.tone === 'success'" routerLink="/transactions">
-          <span class="material-icons action-icon">{{ action.icon }}</span>
-          <div>
-            <h3>{{ action.titleKey | translate }}</h3>
-            <p>{{ action.descriptionKey | translate }}</p>
-          </div>
-        </a>
       }
     </section>
 

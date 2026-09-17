@@ -26,6 +26,15 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 24px;
+  text-align: center;
+}
+
+.login-logo {
+  display: block;
+  width: min(100%, 290px);
+  height: auto;
+  margin: 0 auto 14px;
+  object-fit: contain;
 }
 
 .login-title {
@@ -59,18 +68,10 @@
   gap: 8px;
 }
 
-.form-label,
-.password-label {
+.form-label {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--app-text);
-}
-
-.password-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .form-input-wrapper {
@@ -98,17 +99,6 @@
 .form-input:focus {
   border-color: var(--app-primary);
   box-shadow: 0 0 0 4px rgba(61, 120, 243, 0.12);
-}
-
-.forgot-password-link {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--app-primary);
-  text-decoration: none;
-}
-
-.forgot-password-link:hover {
-  opacity: 0.85;
 }
 
 .submit-button {
@@ -192,6 +182,11 @@
   .login-card {
     padding: 22px;
     border-radius: 24px;
+  }
+
+  .login-logo {
+    width: min(100%, 240px);
+    margin-bottom: 10px;
   }
 
   .form-row {

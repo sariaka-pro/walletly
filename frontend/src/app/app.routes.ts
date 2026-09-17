@@ -36,7 +36,7 @@ export const routes: Routes = [
             { label: 'breadcrumbs.home', url: '/dashboard' },
             { label: 'breadcrumbs.transactions' },
           ],
-          tabs: ['All', 'Expenses'],
+          tabs: ['Expenses'],
         },
       },
       {
@@ -47,7 +47,7 @@ export const routes: Routes = [
             { label: 'breadcrumbs.home', url: '/dashboard' },
             { label: 'breadcrumbs.budgets' },
           ],
-          tabs: ['Monthly', 'Annual'],
+          tabs: ['Monthly'],
         },
       },
       {

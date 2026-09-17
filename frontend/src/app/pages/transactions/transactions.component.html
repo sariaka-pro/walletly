@@ -46,6 +46,15 @@
                 <td class="tx-actions">
                   <button
                     type="button"
+                    class="btn-edit"
+                    (click)="openEditModal(tx)"
+                    [attr.aria-label]="'transactions.edit' | translate"
+                    [title]="'transactions.edit' | translate"
+                  >
+                    <span class="material-icons" aria-hidden="true">edit</span>
+                  </button>
+                  <button
+                    type="button"
                     class="btn-delete"
                     (click)="openDeleteModal(tx)"
                     [attr.aria-label]="'transactions.delete' | translate"
@@ -104,7 +113,7 @@
         <label>{{ 'transactions.modal.budget' | translate }} *</label>
         <select [(ngModel)]="formBudgetId" class="form-input">
           <option [ngValue]="null" disabled>{{ 'transactions.modal.selectBudget' | translate }}</option>
-          @for (b of budgets(); track b.id) {
+          @for (b of budgetsForDate(formDate); track b.id) {
             <option [ngValue]="b.id">{{ b.name }} ({{ b.yearMonth }})</option>
           }
         </select>
@@ -118,6 +127,57 @@
       </div>
     </div>
   </div>
+  }
+
+  <!-- Modal Edit Transaction (USER only) -->
+  @if (showEditModal()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+      <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">{{ 'transactions.editModal.title' | translate }}</h3>
+
+        @if (editError()) {
+          <p class="form-error">{{ editError() }}</p>
+        }
+
+        <div class="form-group">
+          <label>{{ 'transactions.description' | translate }} *</label>
+          <input type="text" [(ngModel)]="editDescription" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'transactions.modal.amountWithCurrency' | translate }} *</label>
+          <input type="number" [(ngModel)]="editAmount" min="0.01" step="0.01" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'transactions.date' | translate }} *</label>
+          <input type="date" [(ngModel)]="editDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'transactions.category' | translate }} *</label>
+          <select [(ngModel)]="editCategoryId" class="form-input">
+            @for (cat of categories(); track cat.id) {
+              <option [ngValue]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>{{ 'transactions.modal.budget' | translate }} *</label>
+          <select [(ngModel)]="editBudgetId" class="form-input">
+            @for (b of budgetsForDate(editDate); track b.id) {
+              <option [ngValue]="b.id">{{ b.name }} ({{ b.yearMonth }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeEditModal()" [disabled]="editSaving()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="button" class="btn-save" (click)="saveTransactionEdit()" [disabled]="editSaving()">
+            {{ editSaving() ? ('common.saving' | translate) : ('common.save' | translate) }}
+          </button>
+        </div>
+      </div>
+    </div>
   }
 
   <!-- Modal Delete Transaction (USER only) -->

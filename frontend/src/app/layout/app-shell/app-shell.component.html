@@ -3,9 +3,9 @@
   <!-- ═══ TOP HEADER ═══ -->
   <header class="app-header">
     <div class="header-logo-block">
-      <div class="header-logo">
-        <img class="img_logo" href="">
-      </div>
+      <a class="header-logo" routerLink="/dashboard" aria-label="Walletly — Tableau de bord">
+        <img class="header-logo-image" src="/images/walletly-logo.png" alt="Walletly" />
+      </a>
     </div>
 
     <div class="header-nav-block">
@@ -32,7 +32,6 @@
         <button class="header-icon-btn" [title]="'nav.logout' | translate" (click)="logout()">
           <span class="material-icons">logout</span>
         </button>
-        <div class="header-avatar" [title]="'shell.account' | translate">MW</div>
       </div>
     </div>
   </header>
