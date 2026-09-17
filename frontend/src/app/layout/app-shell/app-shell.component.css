@@ -158,11 +158,20 @@
 }
 
 @media (max-width: 720px) {
+  /* Approche mobile : deux lignes compactes, avec actions à droite et navigation répartie sur toute la largeur. */
   .app-header {
     flex-wrap: wrap;
+    align-content: flex-start;
+    flex: 0 0 auto;
     height: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    min-height: 0;
+    gap: 8px;
+    padding: 8px 12px 0;
+  }
+
+  .header-logo-block,
+  .header-actions-block {
+    min-height: 58px;
   }
 
   .header-logo-block {
@@ -171,21 +180,65 @@
   }
 
   .header-logo-image {
-    width: 116px;
-    height: 46px;
+    width: 144px;
+    height: 58px;
+  }
+
+  .header-actions-block {
+    margin-left: auto;
+    padding-left: 0;
   }
 
   .header-nav-block {
     order: 3;
     flex: 1 0 100%;
-    justify-content: flex-start;
+    min-height: auto;
   }
 
   .header-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
+    gap: 4px;
     border-left: none;
     border-right: none;
-    padding: 8px 0 0;
+    border-top: 1px solid var(--app-border);
+    overflow: visible;
+    padding: 6px 0;
+  }
+
+  .header-nav-item {
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 0 6px;
+    font-size: 11px;
+  }
+
+  .header-nav-label {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .header-nav-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .subheader {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-nav-item {
+    padding: 0 3px;
+    font-size: 10px;
+  }
+
+  .header-nav-icon {
+    display: none;
   }
 }
 

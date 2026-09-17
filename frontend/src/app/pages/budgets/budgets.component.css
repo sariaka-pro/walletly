@@ -367,3 +367,25 @@
 .progress-bar--danger {
   background: var(--app-danger);
 }
+
+@media (max-width: 720px) {
+  .budgets-page {
+    padding: 16px 12px 24px;
+  }
+
+  .page-title {
+    font-size: 17px;
+  }
+
+  .btn-primary {
+    height: 34px;
+    gap: 4px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .btn-icon {
+    font-size: 15px;
+  }
+}

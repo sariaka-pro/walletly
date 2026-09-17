@@ -339,3 +339,37 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 720px) {
+  .transactions-page {
+    padding: 16px 12px 24px;
+  }
+
+  .page-title {
+    font-size: 17px;
+  }
+
+  .btn-primary {
+    height: 34px;
+    gap: 4px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .btn-icon {
+    font-size: 15px;
+  }
+
+  /* Le conteneur absorbe le débordement sans élargir toute la page mobile. */
+  .transactions-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .transactions-table {
+    min-width: 680px;
+  }
+}
