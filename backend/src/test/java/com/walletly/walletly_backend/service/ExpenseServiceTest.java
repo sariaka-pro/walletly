@@ -1,6 +1,7 @@
 package com.walletly.walletly_backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -50,6 +51,41 @@ class ExpenseServiceTest {
     @AfterEach
     void clearSecurityContext() {
         SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void createExpenseAssociatesOwnedDataAndRecalculatesBudget() {
+        User user = User.builder().id(1L).email("user@example.com").build();
+        Category category = Category.builder().id(5L).name("Courses").user(user).build();
+        Budget budget = Budget.builder()
+            .id(10L)
+            .yearMonth(YearMonth.of(2026, 9))
+            .user(user)
+            .build();
+        Expense expense = Expense.builder()
+            .amount(BigDecimal.valueOf(42.50))
+            .description("  Courses semaine  ")
+            .date(LocalDate.of(2026, 9, 8))
+            .category(Category.builder().id(5L).build())
+            .budget(Budget.builder().id(10L).build())
+            .build();
+
+        authenticate(user);
+        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
+        when(budgetService.getBudgetById(10L)).thenReturn(budget);
+        when(inputSanitizer.sanitizePlainText("  Courses semaine  ", "expense.description"))
+            .thenReturn("Courses semaine");
+        when(expenseRepository.save(expense)).thenReturn(expense);
+
+        Expense result = expenseService.createExpense(expense);
+
+        assertSame(expense, result);
+        assertSame(user, result.getUser());
+        assertSame(category, result.getCategory());
+        assertSame(budget, result.getBudget());
+        assertEquals("Courses semaine", result.getDescription());
+        verify(expenseRepository).save(expense);
+        verify(budgetService).updateBudgetSpent(budget);
     }
 
     @Test
