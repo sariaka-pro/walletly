@@ -1,6 +1,7 @@
 package com.walletly.walletly_backend.config;
 
 import com.walletly.walletly_backend.security.JwtAuthenticationEntryPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,6 +28,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
 
+    @Value("${FRONTEND_URL:http://localhost:4200}")
+    private String frontendUrl;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,8 +42,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration(); 
                     corsConfig.setAllowedOrigins(java.util.Arrays.asList(
-                    "http://localhost:3000",
-                        "http://localhost:4200"
+                        "http://localhost:3000",
+                        "http://localhost:4200",
+                        "http://localhost:4201",
+                        frontendUrl
                     ));
                     corsConfig.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(java.util.Arrays.asList("*"));
