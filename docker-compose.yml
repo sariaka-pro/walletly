@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # ── FRONTEND - Angular ──
   frontend:
@@ -8,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: walletly-frontend
     ports:
-      - "4200:4200"
+      - "4201:4200"
     depends_on:
       - backend
     networks:
@@ -22,7 +20,7 @@ services:
       dockerfile: backend/Dockerfile
     container_name: walletly-backend
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JWT_SECRET=${JWT_SECRET}
@@ -47,7 +45,9 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      # 5432 est déjà utilisé par PostgreSQL sur le Mac.
+      # Le backend Docker continue d'utiliser postgres:5432 en interne.
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
