@@ -1,0 +1,29 @@
+# Indique à Netlify où se trouve le projet Angular et comment produire les fichiers à publier.
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist/walletly/browser"
+
+# Utilise une version de Node.js compatible avec la version d'Angular du projet.
+[build.environment]
+  NODE_VERSION = "22"
+
+# Transmet les requêtes d'authentification du frontend au backend hébergé sur Render.
+[[redirects]]
+  from = "/auth/*"
+  to = "https://walletly-backend-quhj.onrender.com/auth/:splat"
+  status = 200
+  force = true
+
+# Transmet les requêtes métier /api du frontend au backend hébergé sur Render.
+[[redirects]]
+  from = "/api/*"
+  to = "https://walletly-backend-quhj.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Renvoie les routes Angular vers index.html pour éviter une erreur 404 après actualisation.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
