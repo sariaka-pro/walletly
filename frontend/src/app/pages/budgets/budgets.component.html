@@ -16,7 +16,14 @@
   } @else {
     <div class="budgets-grid">
       @for (budget of budgets(); track budget.id) {
-        <div class="budget-card">
+        <div
+          class="budget-card"
+          [class.budget-card--clickable]="!isAdmin"
+          [attr.role]="!isAdmin ? 'button' : null"
+          [attr.tabindex]="!isAdmin ? 0 : null"
+          (click)="openBudgetDetails(budget)"
+          (keydown.enter)="openBudgetDetails(budget)"
+        >
           <div class="budget-card-header">
             <span class="material-icons budget-icon">{{ budget.icon }}</span>
             <div class="budget-info">
@@ -37,10 +44,10 @@
             </span>
             @if (!isAdmin) {
               <div class="budget-actions">
-                <button type="button" class="btn-icon-action btn-edit" (click)="openEditModal(budget)" [title]="'budgets.edit' | translate" [attr.aria-label]="'budgets.edit' | translate">
+                <button type="button" class="btn-icon-action btn-edit" (click)="$event.stopPropagation(); openEditModal(budget)" [title]="'budgets.edit' | translate" [attr.aria-label]="'budgets.edit' | translate">
                   <span class="material-icons" aria-hidden="true">edit</span>
                 </button>
-                <button type="button" class="btn-icon-action btn-delete" (click)="openDeleteModal(budget)" [title]="'budgets.delete' | translate" [attr.aria-label]="'budgets.delete' | translate">
+                <button type="button" class="btn-icon-action btn-delete" (click)="$event.stopPropagation(); openDeleteModal(budget)" [title]="'budgets.delete' | translate" [attr.aria-label]="'budgets.delete' | translate">
                   <span class="material-icons" aria-hidden="true">delete</span>
                 </button>
               </div>
@@ -55,6 +62,54 @@
           </div>
         </div>
       }
+    </div>
+  }
+
+  <!-- Modal transactions liées au budget -->
+  @if (showDetailsModal()) {
+    <div class="modal-overlay" (click)="closeBudgetDetails()">
+      <div class="modal modal--transactions" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="details-header">
+          <div>
+            <h3 class="modal-title">{{ selectedBudget()?.category }}</h3>
+            <p class="details-period">{{ selectedBudget()?.yearMonth }}</p>
+          </div>
+          <button type="button" class="details-close" (click)="closeBudgetDetails()" [attr.aria-label]="'budgets.detailsModal.close' | translate">
+            <span class="material-icons" aria-hidden="true">close</span>
+          </button>
+        </div>
+
+        @if (detailsLoading()) {
+          <p class="state-msg">{{ 'app.loading' | translate }}</p>
+        } @else if (detailsError()) {
+          <p class="form-error">{{ detailsError() }}</p>
+        } @else if (budgetTransactions().length === 0) {
+          <p class="state-msg">{{ 'budgets.detailsModal.empty' | translate }}</p>
+        } @else {
+          <div class="budget-transactions-wrapper">
+            <table class="budget-transactions-table">
+              <thead>
+                <tr>
+                  <th>{{ 'transactions.date' | translate }}</th>
+                  <th>{{ 'transactions.description' | translate }}</th>
+                  <th>{{ 'transactions.category' | translate }}</th>
+                  <th class="text-right">{{ 'transactions.amount' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (transaction of budgetTransactions(); track transaction.id) {
+                  <tr>
+                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td><span class="transaction-category">{{ transaction.category }}</span></td>
+                    <td class="transaction-amount text-right">-{{ transaction.amount | number:'1.2-2' }}€</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
     </div>
   }
 

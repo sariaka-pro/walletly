@@ -2,9 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ExpenseService } from '../../services/expense.service';
+import { BudgetService } from '../../services/budget.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Expense } from '../../models/expense.model';
+import { Budget } from '../../models/budget.model';
 import { TranslatePipe } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { AdminExpense } from '../../models/admin.model';
@@ -71,6 +73,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private expenseService: ExpenseService,
+    private budgetService: BudgetService,
     private adminService: AdminService,
     private authService: AuthService,
   ) {}
@@ -145,10 +148,13 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadUserDashboard(): void {
-    this.expenseService.getAllExpenses().subscribe({
-      next: (expenses: Expense[]) => {
+    forkJoin({
+      expenses: this.expenseService.getAllExpenses(),
+      budgets: this.budgetService.getAllBudgets(),
+    }).subscribe({
+      next: ({ expenses, budgets }) => {
         this.allExpenses = expenses;
-        this.kpis.set(this.buildKpis(expenses));
+        this.kpis.set(this.buildKpis(expenses, budgets));
         this.refreshVisualData();
         this.loading.set(false);
       },
@@ -164,20 +170,29 @@ export class DashboardComponent implements OnInit {
     this.refreshVisualData();
   }
 
-  private buildKpis(expenses: Expense[]): KpiItem[] {
+  private buildKpis(expenses: Expense[], budgets: Budget[]): KpiItem[] {
     const monthExpenses = this.getCurrentMonthExpenses(expenses);
 
     const totalMonthly = monthExpenses.reduce((s, e) => s + Number(e.amount), 0);
     const totalAll = expenses.reduce((s, e) => s + Number(e.amount), 0);
+    const now = new Date();
+    const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const currentBudget = budgets.find((budget) => budget.yearMonth === currentYearMonth);
+    const remaining = currentBudget
+      ? Number(currentBudget.spendingLimit) - Math.abs(totalMonthly)
+      : 0;
+    const balanceTone: KpiItem['tone'] = currentBudget
+      ? (remaining >= 0 ? 'positive' : 'negative')
+      : 'neutral';
 
     this.totalExpenses.set(Math.abs(totalAll));
     this.monthlyExpenses.set(Math.abs(totalMonthly));
     this.monthlyTransactions.set(monthExpenses.length);
 
     return [
-      { labelKey: 'dashboard.kpis.balance', value: `€ ${Math.abs(totalAll).toFixed(2)}`, icon: 'account_balance_wallet', tone: 'neutral' },
-      { labelKey: 'dashboard.kpis.thisMonth', value: `€ ${Math.abs(totalMonthly).toFixed(2)}`, icon: 'trending_down', tone: 'negative' },
-      { labelKey: 'dashboard.kpis.transactions', value: `${monthExpenses.length}`, icon: 'swap_horiz', tone: 'positive' },
+      { labelKey: 'dashboard.kpis.balance', value: `€ ${remaining.toFixed(2)}`, icon: 'account_balance_wallet', tone: balanceTone },
+      { labelKey: 'dashboard.kpis.thisMonth', value: `-€ ${Math.abs(totalMonthly).toFixed(2)}`, icon: 'trending_down', tone: 'negative' },
+      { labelKey: 'dashboard.kpis.transactions', value: `${monthExpenses.length}`, icon: 'swap_horiz', tone: 'neutral' },
     ];
   }
 

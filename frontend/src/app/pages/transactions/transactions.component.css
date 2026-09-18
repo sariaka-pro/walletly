@@ -106,6 +106,18 @@
   font-size: 12px;
 }
 
+.tx-budget {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--app-primary-bg);
+  color: var(--app-primary);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .text-right {
   text-align: right;
 }
@@ -370,6 +382,6 @@
   }
 
   .transactions-table {
-    min-width: 680px;
+    min-width: 800px;
   }
 }

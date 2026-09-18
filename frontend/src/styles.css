@@ -38,9 +38,9 @@
   --app-accent-coral: #155EEF;
 
   /* Status */
-  --app-success: #155EEF;
-  --app-danger: #155EEF;
-  --app-warning: #155EEF;
+  --app-success: #15803D;
+  --app-danger: #DC2626;
+  --app-warning: #D97706;
 
   --app-ink-on-dark: #FFFFFF;
 }

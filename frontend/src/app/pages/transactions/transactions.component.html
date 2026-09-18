@@ -20,6 +20,7 @@
       <table class="transactions-table">
         <thead>
           <tr>
+            <th>{{ 'transactions.budget' | translate }}</th>
             <th>{{ 'transactions.date' | translate }}</th>
             <th>{{ 'transactions.description' | translate }}</th>
             <th>{{ 'transactions.category' | translate }}</th>
@@ -31,6 +32,12 @@
         <tbody>
           @for (tx of transactions(); track tx.id) {
             <tr>
+              <td>
+                <span class="tx-budget">
+                  {{ tx.budgetName }}
+                  @if (tx.budgetYearMonth) { · {{ tx.budgetYearMonth }} }
+                </span>
+              </td>
               <td class="tx-date">{{ tx.date }}</td>
               <td class="tx-label">{{ tx.label }}</td>
               <td>

@@ -21,6 +21,8 @@ interface TxRow {
   amount: number;
   categoryId: number;
   budgetId: number;
+  budgetName: string;
+  budgetYearMonth?: string;
   userEmail?: string;
 }
 
@@ -101,6 +103,7 @@ export class TransactionsComponent implements OnInit {
               amount: -Math.abs(e.amount),
               categoryId: e.categoryId,
               budgetId: e.budgetId,
+              budgetName: `Budget #${e.budgetId}`,
               userEmail: e.userEmail,
             }))
           );
@@ -123,6 +126,8 @@ export class TransactionsComponent implements OnInit {
               amount: -Math.abs(e.amount),
               categoryId: e.category?.id,
               budgetId: e.budget?.id,
+              budgetName: e.budget?.name ?? '-',
+              budgetYearMonth: e.budget?.yearMonth,
             }))
           );
           this.loading.set(false);

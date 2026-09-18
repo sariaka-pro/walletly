@@ -113,6 +113,7 @@
     "date": "Date",
     "description": "Description",
     "category": "Catégorie",
+    "budget": "Budget",
     "amount": "Montant",
     "user": "Utilisateur",
     "actions": "Actions",
@@ -190,6 +191,11 @@
       "title": "Supprimer le budget",
       "question": "Voulez-vous vraiment supprimer le budget",
       "irreversible": "Cette action est irréversible."
+    },
+    "detailsModal": {
+      "close": "Fermer",
+      "empty": "Aucune transaction liée à ce budget.",
+      "loadFailed": "Impossible de charger les transactions de ce budget."
     }
   },
   "admin": {

@@ -2,10 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BudgetService } from '../../services/budget.service';
+import { ExpenseService } from '../../services/expense.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminBudget } from '../../models/admin.model';
 import { Budget } from '../../models/budget.model';
+import { Expense } from '../../models/expense.model';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 interface BudgetRow {
@@ -16,6 +18,14 @@ interface BudgetRow {
   yearMonth: string;
   icon: string;
   userEmail?: string;
+}
+
+interface BudgetTransactionRow {
+  id: number;
+  date: string;
+  description: string;
+  category: string;
+  amount: number;
 }
 
 @Component({
@@ -55,8 +65,16 @@ export class BudgetsComponent implements OnInit {
   deleteError = signal<string | null>(null);
   deleteSaving = signal(false);
 
+  // --- Modal transactions du budget ---
+  showDetailsModal = signal(false);
+  selectedBudget = signal<BudgetRow | null>(null);
+  budgetTransactions = signal<BudgetTransactionRow[]>([]);
+  detailsLoading = signal(false);
+  detailsError = signal<string | null>(null);
+
   constructor(
     private budgetService: BudgetService,
+    private expenseService: ExpenseService,
     private adminService: AdminService,
     private authService: AuthService,
     private translate: TranslateService,
@@ -229,6 +247,45 @@ export class BudgetsComponent implements OnInit {
         this.deleteSaving.set(false);
       }
     });
+  }
+
+  openBudgetDetails(budget: BudgetRow): void {
+    if (this.isAdmin) return;
+
+    this.selectedBudget.set(budget);
+    this.budgetTransactions.set([]);
+    this.detailsError.set(null);
+    this.detailsLoading.set(true);
+    this.showDetailsModal.set(true);
+
+    this.expenseService.getAllExpenses().subscribe({
+      next: (expenses: Expense[]) => {
+        this.budgetTransactions.set(
+          expenses
+            .filter((expense) => expense.budget?.id === budget.id)
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map((expense) => ({
+              id: expense.id,
+              date: expense.date,
+              description: expense.description,
+              category: expense.category?.name ?? '-',
+              amount: Math.abs(Number(expense.amount)),
+            }))
+        );
+        this.detailsLoading.set(false);
+      },
+      error: () => {
+        this.detailsError.set(this.translate.instant('budgets.detailsModal.loadFailed'));
+        this.detailsLoading.set(false);
+      }
+    });
+  }
+
+  closeBudgetDetails(): void {
+    this.showDetailsModal.set(false);
+    this.selectedBudget.set(null);
+    this.budgetTransactions.set([]);
+    this.detailsError.set(null);
   }
 
   getProgressPercent(budget: BudgetRow): number {
